@@ -1,27 +1,20 @@
 import { MissingParamError } from '../errors/missing-param.error';
+import {
+  badRequest,
+  successCreatedResource
+} from '../helpers/http-response-factory.helper';
 import { HttpRequest, HttpResponse } from '../protocols';
 import { Controller } from './controller.protocol';
 
 class SignupController implements Controller {
   exec({ body }: HttpRequest): HttpResponse {
     if (!body.email) {
-      return {
-        body: new MissingParamError('email'),
-        statusCode: 400
-      };
+      return badRequest(new MissingParamError('email'));
     }
     if (!body.username) {
-      return {
-        body: new MissingParamError('username'),
-        statusCode: 400
-      };
+      return badRequest(new MissingParamError('username'));
     }
-    return {
-      statusCode: 200,
-      body: {
-        message: 'Account created'
-      }
-    };
+    return successCreatedResource('account');
   }
 }
 
