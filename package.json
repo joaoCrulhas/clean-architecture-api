@@ -1,6 +1,7 @@
 {
   "name": "clean-architecture",
   "version": "1.0.0",
+  "type": "module",
   "description": "This project is the exercises from clean-architecture course",
   "main": "index.js",
   "scripts": {
