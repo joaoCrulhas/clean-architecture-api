@@ -17,4 +17,14 @@ describe('SignUp Controller', () => {
     const { statusCode } = sut.exec(request);
     expect(statusCode).toEqual(400);
   });
+  it('Should return the missing field in the response body', function () {
+    const request = {
+      email: 'any_email@gmail.com',
+      password: 'any_password',
+      passwordConfirmation: 'any_password'
+    };
+    const { statusCode, body } = sut.exec(request);
+    expect(statusCode).toEqual(400);
+    expect(body).toEqual(new Error('Missing the param username'));
+  });
 });
