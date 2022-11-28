@@ -19,7 +19,7 @@ class SignupController implements Controller {
 
   private validateRequest(body: any): {
     isValid: boolean;
-    missingParam?: string;
+    missingParam: string;
   } {
     let isValid = true;
     let missingParam = '';
@@ -40,17 +40,9 @@ class SignupController implements Controller {
   }
 
   exec({ body }: HttpRequest): HttpResponse {
-    if (!body.email) {
-      return badRequest(new MissingParamError('email'));
-    }
-    if (!body.username) {
-      return badRequest(new MissingParamError('username'));
-    }
-    if (!body.password) {
-      return badRequest(new MissingParamError('password'));
-    }
-    if (!body.passwordConfirmation) {
-      return badRequest(new MissingParamError('passwordConfirmation'));
+    const requiredFields = this.validateRequest(body);
+    if (!requiredFields.isValid) {
+      return badRequest(new MissingParamError(requiredFields.missingParam));
     }
     return successCreatedResource('account');
   }
