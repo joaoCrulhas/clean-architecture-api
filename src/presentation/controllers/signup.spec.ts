@@ -10,21 +10,38 @@ const sut = new SignupController();
 describe('SignUp Controller', () => {
   it('Should return a bad request if username is not provided', function () {
     const request = {
-      email: 'any_email@gmail.com',
-      password: 'any_password',
-      passwordConfirmation: 'any_password'
+      body: {
+        email: 'any_email@gmail.com',
+        password: 'any_password',
+        passwordConfirmation: 'any_password'
+      }
     };
     const { statusCode } = sut.exec(request);
     expect(statusCode).toEqual(400);
   });
   it('Should return the missing field in the response body', function () {
     const request = {
-      email: 'any_email@gmail.com',
-      password: 'any_password',
-      passwordConfirmation: 'any_password'
+      body: {
+        email: 'any_email@gmail.com',
+        password: 'any_password',
+        passwordConfirmation: 'any_password'
+      }
     };
     const { statusCode, body } = sut.exec(request);
     expect(statusCode).toEqual(400);
     expect(body).toEqual(new Error('Missing the param username'));
+  });
+
+  it('Should return an error message if email is not provided', function () {
+    const request = {
+      body: {
+        username: 'any_username',
+        password: 'any_password',
+        passwordConfirmation: 'any_password'
+      }
+    };
+    const { statusCode, body } = sut.exec(request);
+    expect(statusCode).toEqual(400);
+    expect(body).toEqual(new Error('Missing the param email'));
   });
 });
