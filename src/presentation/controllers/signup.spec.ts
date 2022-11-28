@@ -7,7 +7,15 @@ import { SignupController } from './signup';
         2. To create an account the user should provide (username, email, password and passwordConfirmation).
 */
 
-const sut = new SignupController();
+interface SystemUnderTest {
+  sut: SignupController;
+}
+
+const makeSut = (): SystemUnderTest => {
+  return {
+    sut: new SignupController()
+  };
+};
 describe('SignUp Controller', () => {
   it('Should return a bad request if username is not provided', function () {
     const request = {
@@ -17,6 +25,7 @@ describe('SignUp Controller', () => {
         passwordConfirmation: 'any_password'
       }
     };
+    const { sut } = makeSut();
     const { statusCode } = sut.exec(request);
     expect(statusCode).toEqual(400);
   });
@@ -28,6 +37,7 @@ describe('SignUp Controller', () => {
         passwordConfirmation: 'any_password'
       }
     };
+    const { sut } = makeSut();
     const { statusCode, body } = sut.exec(request);
     expect(statusCode).toEqual(400);
     expect(body).toEqual(new MissingParamError('username'));
@@ -41,6 +51,7 @@ describe('SignUp Controller', () => {
         passwordConfirmation: 'any_password'
       }
     };
+    const { sut } = makeSut();
     const { statusCode, body } = sut.exec(request);
     expect(statusCode).toEqual(400);
     expect(body).toEqual(new MissingParamError('email'));
