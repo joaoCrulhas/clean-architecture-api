@@ -14,6 +14,12 @@ class SignupController implements Controller {
     if (!body.username) {
       return badRequest(new MissingParamError('username'));
     }
+    if (!body.password) {
+      return badRequest(new MissingParamError('password'));
+    }
+    if (!body.passwordConfirmation) {
+      return badRequest(new MissingParamError('passwordConfirmation'));
+    }
     return successCreatedResource('account');
   }
 }
