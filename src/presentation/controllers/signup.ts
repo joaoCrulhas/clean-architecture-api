@@ -51,6 +51,10 @@ class SignupController implements Controller {
       if (!this.emailValidator.isValid(body.email)) {
         return badRequest(new InvalidParamError('email'));
       }
+      const { password, passwordConfirmation } = body;
+      if (password !== passwordConfirmation) {
+        return badRequest(new InvalidParamError('passwordConfirmation'));
+      }
       return successCreatedResource('account');
     } catch (error: any) {
       return {

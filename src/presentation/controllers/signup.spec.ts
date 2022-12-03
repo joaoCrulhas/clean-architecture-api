@@ -162,4 +162,19 @@ describe('SignUp Controller', () => {
     expect(statusCode).toEqual(HTTP_RESPONSE_CODE.serverError);
     expect(body).toEqual(new ServerError());
   });
+
+  it('should return an error if passwordConfirmation is different than password', () => {
+    const { sut } = makeSut();
+    const request = {
+      body: {
+        email: 'mail@gmail.com',
+        username: 'any_username',
+        password: 'any_password',
+        passwordConfirmation: 'any_password_error'
+      }
+    };
+    const { statusCode, body } = sut.exec(request);
+    expect(statusCode).toEqual(HTTP_RESPONSE_CODE.badRequest);
+    expect(body).toEqual(new InvalidParamError('passwordConfirmation'));
+  });
 });
