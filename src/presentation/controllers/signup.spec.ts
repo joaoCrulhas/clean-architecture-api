@@ -1,4 +1,7 @@
+import { InvalidParamError } from '../errors/invalid-param.error';
 import { MissingParamError } from '../errors/missing-param.error';
+import { HTTP_RESPONSE_CODE } from '../helpers/http-code.helper';
+import { EmailValidator } from '../protocols';
 import { SignupController } from './signup';
 
 /*
@@ -9,11 +12,19 @@ import { SignupController } from './signup';
 
 interface SystemUnderTest {
   sut: SignupController;
+  emailValidator: EmailValidator;
 }
 
 const makeSut = (): SystemUnderTest => {
+  class EmailValidatorStub implements EmailValidator {
+    isValid(email: string): boolean {
+      return true;
+    }
+  }
+  const emailValidatorStub = new EmailValidatorStub();
   return {
-    sut: new SignupController()
+    sut: new SignupController(emailValidatorStub),
+    emailValidator: emailValidatorStub
   };
 };
 describe('SignUp Controller', () => {
@@ -83,5 +94,36 @@ describe('SignUp Controller', () => {
     const { statusCode, body } = sut.exec(request);
     expect(statusCode).toEqual(400);
     expect(body).toEqual(new MissingParamError('passwordConfirmation'));
+  });
+
+  it('Should execute at least one time the emailValidator@isValid if all fields is provided', function () {
+    const { sut, emailValidator } = makeSut();
+    const request = {
+      body: {
+        email: 'anyEmail@gmail.com',
+        username: 'any_username',
+        password: 'any_password',
+        passwordConfirmation: 'any_password'
+      }
+    };
+    const emailValidatorSpy = jest.spyOn(emailValidator, 'isValid');
+    sut.exec(request);
+    expect(emailValidatorSpy).toBeCalled();
+  });
+
+  it('Should return an error if the email provided is an invalid email', function () {
+    const { sut, emailValidator } = makeSut();
+    const request = {
+      body: {
+        email: '##a321l',
+        username: 'any_username',
+        password: 'any_password',
+        passwordConfirmation: 'any_password'
+      }
+    };
+    jest.spyOn(emailValidator, 'isValid').mockReturnValue(false);
+    const { statusCode, body } = sut.exec(request);
+    expect(statusCode).toEqual(HTTP_RESPONSE_CODE.badRequest);
+    expect(body).toEqual(new InvalidParamError('email'));
   });
 });
