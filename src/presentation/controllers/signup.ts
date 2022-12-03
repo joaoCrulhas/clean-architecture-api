@@ -1,5 +1,7 @@
 import { InvalidParamError } from '../errors/invalid-param.error';
 import { MissingParamError } from '../errors/missing-param.error';
+import { ServerError } from '../errors/server-error.error';
+import { HTTP_RESPONSE_CODE } from '../helpers/http-code.helper';
 import {
   badRequest,
   successCreatedResource
@@ -41,14 +43,21 @@ class SignupController implements Controller {
   }
 
   exec({ body }: HttpRequest): HttpResponse {
-    const requiredFields = this.validateRequest(body);
-    if (!requiredFields.isValid) {
-      return badRequest(new MissingParamError(requiredFields.missingParam));
+    try {
+      const requiredFields = this.validateRequest(body);
+      if (!requiredFields.isValid) {
+        return badRequest(new MissingParamError(requiredFields.missingParam));
+      }
+      if (!this.emailValidator.isValid(body.email)) {
+        return badRequest(new InvalidParamError('email'));
+      }
+      return successCreatedResource('account');
+    } catch (error: any) {
+      return {
+        statusCode: HTTP_RESPONSE_CODE.serverError,
+        body: new ServerError()
+      };
     }
-    if (!this.emailValidator.isValid(body.email)) {
-      return badRequest(new InvalidParamError('email'));
-    }
-    return successCreatedResource('account');
   }
 }
 
