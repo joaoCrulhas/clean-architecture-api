@@ -7,10 +7,13 @@ import {
   successCreatedResource
 } from '../helpers/http-response-factory.helper';
 import { EmailValidator, HttpResponse } from '../protocols';
-import { SignupRequest } from '../protocols/http-request.protocol';
+import {
+  HttpRequest,
+  BodySignupRequest
+} from '../protocols/http-request.protocol';
 import { Controller } from './controller.protocol';
 
-class SignupController implements Controller<SignupRequest> {
+class SignupController implements Controller<HttpRequest<BodySignupRequest>> {
   private requiredFields: string[] = [];
   constructor(private readonly emailValidator: EmailValidator) {
     this.requiredFields = [
@@ -43,10 +46,10 @@ class SignupController implements Controller<SignupRequest> {
     };
   }
 
-  exec({ body }: SignupRequest): HttpResponse {
+  exec({ body }: HttpRequest<BodySignupRequest>): HttpResponse {
     try {
       const requiredFields = this.validateRequest(body);
-      if (!requiredFields.isValid) {
+      if (!requiredFields.isValid || !body) {
         return badRequest(new MissingParamError(requiredFields.missingParam));
       }
       if (!this.emailValidator.isValid(body.email)) {

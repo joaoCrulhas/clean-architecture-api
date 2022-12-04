@@ -2,8 +2,8 @@ import { InvalidParamError } from '../errors/invalid-param.error';
 import { MissingParamError } from '../errors/missing-param.error';
 import { ServerError } from '../errors/server-error.error';
 import { HTTP_RESPONSE_CODE } from '../helpers/http-code.helper';
-import { EmailValidator } from '../protocols';
-import { SignupRequest } from '../protocols/http-request.protocol';
+import { EmailValidator, HttpRequest } from '../protocols';
+import { BodySignupRequest } from '../protocols/http-request.protocol';
 import { SignupController } from './signup';
 
 /*
@@ -31,7 +31,8 @@ const makeSut = (): SystemUnderTest => {
 };
 describe('SignUp Controller', () => {
   it('Should return a bad request if username is not provided', function () {
-    const request: SignupRequest = {
+    const { sut } = makeSut();
+    const { statusCode } = sut.exec({
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       //@ts-ignore
       body: {
@@ -39,13 +40,11 @@ describe('SignUp Controller', () => {
         password: 'any_password',
         passwordConfirmation: 'any_password'
       }
-    };
-    const { sut } = makeSut();
-    const { statusCode } = sut.exec(request);
+    });
     expect(statusCode).toEqual(400);
   });
   it('Should return the missing field in the response body', function () {
-    const request: SignupRequest = {
+    const request: HttpRequest<BodySignupRequest> = {
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       //@ts-ignore
       body: {
@@ -61,7 +60,7 @@ describe('SignUp Controller', () => {
   });
 
   it('Should return an error message if email is not provided', function () {
-    const request: SignupRequest = {
+    const request: HttpRequest<BodySignupRequest> = {
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       //@ts-ignore
       body: {
@@ -77,7 +76,7 @@ describe('SignUp Controller', () => {
   });
 
   it('Should return an error message if password is not provided', function () {
-    const request: SignupRequest = {
+    const request: HttpRequest<BodySignupRequest> = {
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       //@ts-ignore
       body: {
@@ -93,7 +92,7 @@ describe('SignUp Controller', () => {
   });
 
   it('Should return an error message if passwordConfirmation is not provided', function () {
-    const request: SignupRequest = {
+    const request: HttpRequest<BodySignupRequest> = {
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       //@ts-ignore
       body: {
