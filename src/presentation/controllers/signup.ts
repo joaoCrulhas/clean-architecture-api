@@ -6,10 +6,11 @@ import {
   badRequest,
   successCreatedResource
 } from '../helpers/http-response-factory.helper';
-import { EmailValidator, HttpRequest, HttpResponse } from '../protocols';
+import { EmailValidator, HttpResponse } from '../protocols';
+import { SignupRequest } from '../protocols/http-request.protocol';
 import { Controller } from './controller.protocol';
 
-class SignupController implements Controller {
+class SignupController implements Controller<SignupRequest> {
   private requiredFields: string[] = [];
   constructor(private readonly emailValidator: EmailValidator) {
     this.requiredFields = [
@@ -42,7 +43,7 @@ class SignupController implements Controller {
     };
   }
 
-  exec({ body }: HttpRequest): HttpResponse {
+  exec({ body }: SignupRequest): HttpResponse {
     try {
       const requiredFields = this.validateRequest(body);
       if (!requiredFields.isValid) {

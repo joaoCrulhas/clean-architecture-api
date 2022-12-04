@@ -3,6 +3,7 @@ import { MissingParamError } from '../errors/missing-param.error';
 import { ServerError } from '../errors/server-error.error';
 import { HTTP_RESPONSE_CODE } from '../helpers/http-code.helper';
 import { EmailValidator } from '../protocols';
+import { SignupRequest } from '../protocols/http-request.protocol';
 import { SignupController } from './signup';
 
 /*
@@ -30,7 +31,9 @@ const makeSut = (): SystemUnderTest => {
 };
 describe('SignUp Controller', () => {
   it('Should return a bad request if username is not provided', function () {
-    const request = {
+    const request: SignupRequest = {
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      //@ts-ignore
       body: {
         email: 'any_email@gmail.com',
         password: 'any_password',
@@ -42,7 +45,9 @@ describe('SignUp Controller', () => {
     expect(statusCode).toEqual(400);
   });
   it('Should return the missing field in the response body', function () {
-    const request = {
+    const request: SignupRequest = {
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      //@ts-ignore
       body: {
         email: 'any_email@gmail.com',
         password: 'any_password',
@@ -56,7 +61,9 @@ describe('SignUp Controller', () => {
   });
 
   it('Should return an error message if email is not provided', function () {
-    const request = {
+    const request: SignupRequest = {
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      //@ts-ignore
       body: {
         username: 'any_username',
         password: 'any_password',
@@ -70,7 +77,9 @@ describe('SignUp Controller', () => {
   });
 
   it('Should return an error message if password is not provided', function () {
-    const request = {
+    const request: SignupRequest = {
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      //@ts-ignore
       body: {
         email: 'anyEmail@gmail.com',
         username: 'any_username',
@@ -84,7 +93,9 @@ describe('SignUp Controller', () => {
   });
 
   it('Should return an error message if passwordConfirmation is not provided', function () {
-    const request = {
+    const request: SignupRequest = {
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      //@ts-ignore
       body: {
         email: 'anyEmail@gmail.com',
         username: 'any_username',

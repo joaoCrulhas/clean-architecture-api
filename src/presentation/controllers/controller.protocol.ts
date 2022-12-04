@@ -1,4 +1,4 @@
-interface Controller {
-  exec(request: any): any;
+interface Controller<T> {
+  exec(request: T): any;
 }
 export { Controller };
