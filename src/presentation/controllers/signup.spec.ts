@@ -222,4 +222,22 @@ describe('SignUp Controller', () => {
       password: 'any_password'
     });
   });
+
+  it('Should throw an error if AddAccount throws', function () {
+    const { sut, addAccountStub } = makeSut();
+    jest.spyOn(addAccountStub, 'exec').mockImplementationOnce(() => {
+      throw new Error();
+    });
+    const request = {
+      body: {
+        email: 'mail@gmail.com',
+        username: 'any_username',
+        password: 'any_password',
+        passwordConfirmation: 'any_password'
+      }
+    };
+    const response = sut.exec(request);
+    expect(response.statusCode).toEqual(500);
+    expect(response.body).toEqual(new ServerError());
+  });
 });
