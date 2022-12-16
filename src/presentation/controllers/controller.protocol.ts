@@ -1,4 +1,4 @@
 interface Controller<T> {
-  exec(request: T): any;
+  exec(request: T): Promise<any>;
 }
 export { Controller };

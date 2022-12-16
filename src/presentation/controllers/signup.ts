@@ -50,7 +50,7 @@ class SignupController implements Controller<HttpRequest<BodySignupRequest>> {
     };
   }
 
-  exec({ body }: HttpRequest<BodySignupRequest>): HttpResponse {
+  async exec({ body }: HttpRequest<BodySignupRequest>): Promise<HttpResponse> {
     try {
       const requiredFields = this.validateRequest(body);
       if (!requiredFields.isValid || !body) {
@@ -63,7 +63,7 @@ class SignupController implements Controller<HttpRequest<BodySignupRequest>> {
       if (password !== passwordConfirmation) {
         return badRequest(new InvalidParamError('passwordConfirmation'));
       }
-      const accountCreated = this.addAccount.exec({
+      const accountCreated = await this.addAccount.exec({
         email,
         password,
         username

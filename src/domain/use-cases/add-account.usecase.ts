@@ -6,5 +6,5 @@ export interface AddAccountDTO {
   password: string;
 }
 export interface AddAccount {
-  exec(account: AddAccountDTO): AccountModel;
+  exec(account: AddAccountDTO): Promise<AccountModel>;
 }
