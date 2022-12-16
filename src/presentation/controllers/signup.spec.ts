@@ -226,7 +226,7 @@ describe('SignUp Controller', () => {
   it('Should throw an error if AddAccount throws', async function () {
     const { sut, addAccountStub } = makeSut();
     jest.spyOn(addAccountStub, 'exec').mockImplementationOnce(() => {
-      throw new Error();
+      return Promise.reject(new Error());
     });
     const request = {
       body: {
