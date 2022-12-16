@@ -1,3 +1,4 @@
+import { AddAccount } from '../../domain/use-cases';
 import { InvalidParamError } from '../errors/invalid-param.error';
 import { MissingParamError } from '../errors/missing-param.error';
 import { ServerError } from '../errors/server-error.error';
@@ -15,7 +16,10 @@ import { Controller } from './controller.protocol';
 
 class SignupController implements Controller<HttpRequest<BodySignupRequest>> {
   private requiredFields: string[] = [];
-  constructor(private readonly emailValidator: EmailValidator) {
+  constructor(
+    private readonly emailValidator: EmailValidator,
+    private readonly addAccount: AddAccount
+  ) {
     this.requiredFields = [
       'email',
       'password',
@@ -55,10 +59,15 @@ class SignupController implements Controller<HttpRequest<BodySignupRequest>> {
       if (!this.emailValidator.isValid(body.email)) {
         return badRequest(new InvalidParamError('email'));
       }
-      const { password, passwordConfirmation } = body;
+      const { password, passwordConfirmation, email, username } = body;
       if (password !== passwordConfirmation) {
         return badRequest(new InvalidParamError('passwordConfirmation'));
       }
+      this.addAccount.exec({
+        email,
+        password,
+        username
+      });
       return successCreatedResource('account');
     } catch (error: any) {
       return {

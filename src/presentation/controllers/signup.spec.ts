@@ -1,3 +1,6 @@
+import { AccountModel } from '../../domain/models/account.model';
+import { AddAccount } from '../../domain/use-cases';
+import { AddAccountDTO } from '../../domain/use-cases/add-account.usecase';
 import { InvalidParamError } from '../errors/invalid-param.error';
 import { MissingParamError } from '../errors/missing-param.error';
 import { ServerError } from '../errors/server-error.error';
@@ -11,22 +14,32 @@ import { SignupController } from './signup';
         1. The controller should receive a request from user and create an account for him.
         2. To create an account the user should provide (username, email, password and passwordConfirmation).
 */
-
 interface SystemUnderTest {
   sut: SignupController;
   emailValidator: EmailValidator;
+  addAccountStub: AddAccount;
 }
 
 const makeSut = (): SystemUnderTest => {
+  class AddAccountStub implements AddAccount {
+    exec(account: AddAccountDTO): AccountModel {
+      return {
+        ...account,
+        id: 'hashId'
+      };
+    }
+  }
   class EmailValidatorStub implements EmailValidator {
     isValid(email: string): boolean {
       return true;
     }
   }
   const emailValidatorStub = new EmailValidatorStub();
+  const addAccountStub = new AddAccountStub();
   return {
-    sut: new SignupController(emailValidatorStub),
-    emailValidator: emailValidatorStub
+    sut: new SignupController(emailValidatorStub, addAccountStub),
+    emailValidator: emailValidatorStub,
+    addAccountStub
   };
 };
 describe('SignUp Controller', () => {
@@ -186,5 +199,26 @@ describe('SignUp Controller', () => {
     const { statusCode, body } = sut.exec(request);
     expect(statusCode).toEqual(HTTP_RESPONSE_CODE.badRequest);
     expect(body).toEqual(new InvalidParamError('passwordConfirmation'));
+  });
+
+  it('Should execute the addAccount with correct arguments', function () {
+    const { sut, addAccountStub } = makeSut();
+    const aSpy = jest.spyOn(addAccountStub, 'exec');
+    const request = {
+      body: {
+        email: 'mail@gmail.com',
+        username: 'any_username',
+        password: 'any_password',
+        passwordConfirmation: 'any_password_error'
+      }
+    };
+    sut.exec(request);
+    expect(aSpy).toBeCalled();
+    expect(aSpy).toBeCalledWith({
+      email: 'mail@gmail.com',
+      username: 'any_username',
+      password: 'any_password',
+      passwordConfirmation: 'any_password_error'
+    });
   });
 });
