@@ -5,17 +5,14 @@ import { HTTP_RESPONSE_CODE } from './http-code.helper';
 const badRequest = (error: Error): HttpResponse => {
   return {
     statusCode: HTTP_RESPONSE_CODE.badRequest,
-    body: error
+    data: error
   };
 };
 
-const successCreatedResource = (resource: string): HttpResponse => {
-  const message = `${resource} created`;
+const successCreatedResource = (resource: any): HttpResponse => {
   return {
     statusCode: HTTP_RESPONSE_CODE.created,
-    body: {
-      message
-    }
+    data: resource
   };
 };
 

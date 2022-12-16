@@ -63,16 +63,16 @@ class SignupController implements Controller<HttpRequest<BodySignupRequest>> {
       if (password !== passwordConfirmation) {
         return badRequest(new InvalidParamError('passwordConfirmation'));
       }
-      this.addAccount.exec({
+      const accountCreated = this.addAccount.exec({
         email,
         password,
         username
       });
-      return successCreatedResource('account');
+      return successCreatedResource(accountCreated);
     } catch (error: any) {
       return {
         statusCode: HTTP_RESPONSE_CODE.serverError,
-        body: new ServerError()
+        data: new ServerError()
       };
     }
   }

@@ -69,9 +69,9 @@ describe('SignUp Controller', () => {
       }
     };
     const { sut } = makeSut();
-    const { statusCode, body } = sut.exec(request);
+    const { statusCode, data } = sut.exec(request);
     expect(statusCode).toEqual(400);
-    expect(body).toEqual(new MissingParamError('username'));
+    expect(data).toEqual(new MissingParamError('username'));
   });
 
   it('Should return an error message if email is not provided', function () {
@@ -85,9 +85,9 @@ describe('SignUp Controller', () => {
       }
     };
     const { sut } = makeSut();
-    const { statusCode, body } = sut.exec(request);
+    const { statusCode, data } = sut.exec(request);
     expect(statusCode).toEqual(400);
-    expect(body).toEqual(new MissingParamError('email'));
+    expect(data).toEqual(new MissingParamError('email'));
   });
 
   it('Should return an error message if password is not provided', function () {
@@ -101,9 +101,9 @@ describe('SignUp Controller', () => {
       }
     };
     const { sut } = makeSut();
-    const { statusCode, body } = sut.exec(request);
+    const { statusCode, data } = sut.exec(request);
     expect(statusCode).toEqual(400);
-    expect(body).toEqual(new MissingParamError('password'));
+    expect(data).toEqual(new MissingParamError('password'));
   });
 
   it('Should return an error message if passwordConfirmation is not provided', function () {
@@ -117,9 +117,9 @@ describe('SignUp Controller', () => {
       }
     };
     const { sut } = makeSut();
-    const { statusCode, body } = sut.exec(request);
+    const { statusCode, data } = sut.exec(request);
     expect(statusCode).toEqual(400);
-    expect(body).toEqual(new MissingParamError('passwordConfirmation'));
+    expect(data).toEqual(new MissingParamError('passwordConfirmation'));
   });
 
   it('Should execute at least one time the emailValidator@isValid if all fields is provided', function () {
@@ -148,9 +148,9 @@ describe('SignUp Controller', () => {
       }
     };
     jest.spyOn(emailValidator, 'isValid').mockReturnValue(false);
-    const { statusCode, body } = sut.exec(request);
+    const { statusCode, data } = sut.exec(request);
     expect(statusCode).toEqual(HTTP_RESPONSE_CODE.badRequest);
-    expect(body).toEqual(new InvalidParamError('email'));
+    expect(data).toEqual(new InvalidParamError('email'));
   });
 
   it('Should call EmailValidator@isValid with correct argument', function () {
@@ -183,9 +183,9 @@ describe('SignUp Controller', () => {
         passwordConfirmation: 'any_password'
       }
     };
-    const { statusCode, body } = sut.exec(request);
+    const { statusCode, data } = sut.exec(request);
     expect(statusCode).toEqual(HTTP_RESPONSE_CODE.serverError);
-    expect(body).toEqual(new ServerError());
+    expect(data).toEqual(new ServerError());
   });
 
   it('should return an error if passwordConfirmation is different than password', () => {
@@ -198,9 +198,9 @@ describe('SignUp Controller', () => {
         passwordConfirmation: 'any_password_error'
       }
     };
-    const { statusCode, body } = sut.exec(request);
+    const { statusCode, data } = sut.exec(request);
     expect(statusCode).toEqual(HTTP_RESPONSE_CODE.badRequest);
-    expect(body).toEqual(new InvalidParamError('passwordConfirmation'));
+    expect(data).toEqual(new InvalidParamError('passwordConfirmation'));
   });
 
   it('Should execute the addAccount with correct arguments', function () {
@@ -238,6 +238,28 @@ describe('SignUp Controller', () => {
     };
     const response = sut.exec(request);
     expect(response.statusCode).toEqual(500);
-    expect(response.body).toEqual(new ServerError());
+    expect(response.data).toEqual(new ServerError());
+  });
+
+  it('Should return 200 if addAccount executed successfully', function () {
+    const { sut } = makeSut();
+    const request = {
+      body: {
+        email: 'mail@gmail.com',
+        username: 'any_username',
+        password: 'any_password',
+        passwordConfirmation: 'any_password'
+      }
+    };
+    const response = sut.exec(request);
+    expect(response).toEqual({
+      statusCode: 201,
+      data: {
+        email: 'mail@gmail.com',
+        password: 'any_password',
+        username: 'any_username',
+        id: 'hashId'
+      }
+    });
   });
 });
