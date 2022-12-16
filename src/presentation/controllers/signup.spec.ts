@@ -24,7 +24,9 @@ const makeSut = (): SystemUnderTest => {
   class AddAccountStub implements AddAccount {
     exec(account: AddAccountDTO): AccountModel {
       return {
-        ...account,
+        email: account.email,
+        password: account.password,
+        username: account.username,
         id: 'hashId'
       };
     }
@@ -209,7 +211,7 @@ describe('SignUp Controller', () => {
         email: 'mail@gmail.com',
         username: 'any_username',
         password: 'any_password',
-        passwordConfirmation: 'any_password_error'
+        passwordConfirmation: 'any_password'
       }
     };
     sut.exec(request);
@@ -217,8 +219,7 @@ describe('SignUp Controller', () => {
     expect(aSpy).toBeCalledWith({
       email: 'mail@gmail.com',
       username: 'any_username',
-      password: 'any_password',
-      passwordConfirmation: 'any_password_error'
+      password: 'any_password'
     });
   });
 });
