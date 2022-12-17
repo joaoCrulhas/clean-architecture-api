@@ -6,11 +6,11 @@
   "main": "index.js",
   "scripts": {
     "prettier-format": "prettier --config .prettierrc 'src/**/*.ts' --write",
-    "test": "jest --silent --runInBand --passWithNoTests",
-    "test:verbose": "jest --runInBand --passWithNoTests",
-    "test:unit": "npm test -- --passWithNoTests --watch -c jest-unit-config.js",
-    "test:integration": "npm test -- --passWithNoTests --watch -c jest-integration-config.js",
-    "test:staged": "npm test -- --passWithNoTests --findRelatedTests",
+    "test": "jest --silent --runInBand",
+    "test:verbose": "jest --runInBand",
+    "test:unit": "npm test -- --watch",
+    "test:integration": "npm test -- --watch",
+    "test:staged": "npm test -- --findRelatedTests",
     "test:ci": "npm test -- --passWithNoTests --coverage",
     "prepare": "husky install"
   },
