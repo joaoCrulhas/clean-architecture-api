@@ -3,6 +3,7 @@
 "editor.formatOnSave": true,
 "editor.tabSize": 2,
 "conventionalCommits.scopes": [
-  "Controller"
+  "Controller",
+  "Utils"
 ]
 }
