@@ -101,11 +101,29 @@ describe('DbAccount', () => {
     jest.spyOn(addAccountRepository, 'exec').mockImplementationOnce(() => {
       return Promise.reject(new Error('addAccountRepository_error'));
     });
-
     try {
       await sut.exec(request);
     } catch (e: any) {
       expect(e.message).toEqual('addAccountRepository_error');
     }
+  });
+
+  it('Should return the created account if everything works fine', async function () {
+    const request: AddAccountDTO = {
+      email: 'valid_emaal@gmail.com',
+      username: 'username',
+      password: 'valid_password'
+    };
+    const response: AccountModel = {
+      id: 'hashedId',
+      email: 'valid_emaal@gmail.com',
+      username: 'username',
+      password: 'valid_password'
+    };
+    const { sut, addAccountRepository, encrypter } = makeSut();
+    jest.spyOn(encrypter, 'encrypt').mockResolvedValueOnce('encryptedPassword');
+    jest.spyOn(addAccountRepository, 'exec').mockResolvedValueOnce(response);
+    const accountCretead = await sut.exec(request);
+    expect(accountCretead).toStrictEqual(response);
   });
 });

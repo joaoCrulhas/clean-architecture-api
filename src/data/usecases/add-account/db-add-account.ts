@@ -9,15 +9,17 @@ class DbAddAccount implements AddAccount {
     private readonly encrypter: Encrypter,
     private readonly addAccountRepository: AddAccountRepository
   ) {}
-  async exec(account: AddAccountDTO): Promise<AccountModel> {
-    const { email, password, username } = account;
+  async exec({
+    email,
+    password,
+    username
+  }: AddAccountDTO): Promise<AccountModel> {
     const encryptedPassword = await this.encrypter.encrypt(password);
-    const accountCreated = await this.addAccountRepository.exec({
+    return await this.addAccountRepository.exec({
       email,
       password: encryptedPassword,
       username
     });
-    return accountCreated;
   }
 }
 export { DbAddAccount };
