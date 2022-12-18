@@ -1,5 +1,10 @@
 import { EmailValidator } from '../presentation/protocols';
 import { EmailValidatorAdapter } from './email-validator-adapter';
+import * as validator from 'email-validator';
+
+jest.mock('email-validator', () => ({
+  validate: jest.fn()
+}));
 
 interface SystemUnderTest {
   sut: EmailValidator;
@@ -15,7 +20,15 @@ const makeSut = (): SystemUnderTest => {
 describe('Email validator adapter', () => {
   it('Should return false if validator returns false', function () {
     const { sut } = makeSut();
+    jest.spyOn(validator, 'validate').mockReturnValue(false);
     const response = sut.isValid('#123.com');
     expect(response).toEqual(false);
+  });
+
+  it('Should return true if validator returns false', function () {
+    const { sut } = makeSut();
+    jest.spyOn(validator, 'validate').mockReturnValue(true);
+    const response = sut.isValid('emailValid@gmail.com');
+    expect(response).toEqual(true);
   });
 });

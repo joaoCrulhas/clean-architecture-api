@@ -34,6 +34,7 @@
     "typescript": "^4.9.3"
   },
   "dependencies": {
+    "email-validator": "^2.0.4",
     "eslint-config-standard": "^17.0.0"
   }
 }
