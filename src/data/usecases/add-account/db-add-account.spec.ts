@@ -57,20 +57,6 @@ describe('DbAccount', () => {
     expect(aSpy).toBeCalledWith('valid_password');
   });
 
-  it('Should throws an execption if encrypter throws an error', async () => {
-    const request: AddAccountDTO = {
-      email: 'valid_emaal@gmail.com',
-      username: 'username',
-      password: 'valid_password'
-    };
-    const { sut, encrypter } = makeSut();
-    jest.spyOn(encrypter, 'encrypt').mockImplementationOnce(() => {
-      return Promise.reject(new Error());
-    });
-    const promise = await sut.exec(request);
-    await expect(promise).rejects.toThrow();
-  });
-
   it('should call AddAccountRepository with correct arguments', async () => {
     const request: AddAccountDTO = {
       email: 'valid_emaal@gmail.com',
@@ -86,5 +72,40 @@ describe('DbAccount', () => {
       username: 'username',
       password: 'encryptedPassword'
     });
+  });
+  it('Should throws an execpiton if encypter throws', async () => {
+    const request: AddAccountDTO = {
+      email: 'valid_emaal@gmail.com',
+      username: 'username',
+      password: 'valid_password'
+    };
+    const { sut, encrypter } = makeSut();
+    jest.spyOn(encrypter, 'encrypt').mockImplementationOnce(() => {
+      return Promise.reject(new Error('Encrypt_Error'));
+    });
+
+    try {
+      await sut.exec(request);
+    } catch (e: any) {
+      expect(e.message).toEqual('Encrypt_Error');
+    }
+  });
+
+  it('Should throws an execpiton if addAccountRepo throws', async () => {
+    const request: AddAccountDTO = {
+      email: 'valid_emaal@gmail.com',
+      username: 'username',
+      password: 'valid_password'
+    };
+    const { sut, addAccountRepository } = makeSut();
+    jest.spyOn(addAccountRepository, 'exec').mockImplementationOnce(() => {
+      return Promise.reject(new Error('addAccountRepository_error'));
+    });
+
+    try {
+      await sut.exec(request);
+    } catch (e: any) {
+      expect(e.message).toEqual('addAccountRepository_error');
+    }
   });
 });
