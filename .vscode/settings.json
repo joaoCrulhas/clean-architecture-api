@@ -5,6 +5,7 @@
 "conventionalCommits.scopes": [
   "Controller",
   "Utils",
-  "DataLayer"
+  "DataLayer",
+  "RepositoryData"
 ]
 }
