@@ -25,4 +25,13 @@ describe('Bcrypte-adpater', () => {
     const hashedKey = await sut.encrypt('current_password');
     expect(hashedKey).toEqual('hashed_string');
   });
+
+  it('Should throws if bcrypt thros an excpetion', async () => {
+    jest.spyOn(bcrypt, 'hash').mockImplementationOnce(() => {
+      return Promise.reject(new Error());
+    });
+    const { sut } = makeSut();
+    const promise = sut.encrypt('current_password');
+    expect(promise).rejects.toThrow();
+  });
 });
