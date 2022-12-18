@@ -4,6 +4,7 @@
 "editor.tabSize": 2,
 "conventionalCommits.scopes": [
   "Controller",
-  "Utils"
+  "Utils",
+  "DataLayer"
 ]
 }
