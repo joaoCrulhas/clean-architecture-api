@@ -16,4 +16,13 @@ describe('Bcrypte-adpater', () => {
     await sut.encrypt('current_password');
     expect(aSpy).toBeCalledWith('current_password', 12);
   });
+
+  it('Should return a hashed string if bcrypt works', async () => {
+    jest.spyOn(bcrypt, 'hash').mockImplementationOnce(() => {
+      return Promise.resolve('hashed_string');
+    });
+    const { sut } = makeSut();
+    const hashedKey = await sut.encrypt('current_password');
+    expect(hashedKey).toEqual('hashed_string');
+  });
 });
