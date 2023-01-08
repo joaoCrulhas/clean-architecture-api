@@ -6,6 +6,7 @@
   "Controller",
   "Utils",
   "DataLayer",
-  "RepositoryData"
+  "RepositoryData",
+  "Repository"
 ]
 }

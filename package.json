@@ -18,8 +18,10 @@
   "author": "",
   "license": "ISC",
   "devDependencies": {
+    "@shelf/jest-mongodb": "^4.1.4",
     "@types/bcrypt": "^5.0.0",
     "@types/jest": "^29.2.3",
+    "@types/mongodb": "^4.0.7",
     "@types/node": "^18.11.9",
     "@typescript-eslint/eslint-plugin": "^5.44.0",
     "@typescript-eslint/parser": "^5.44.0",

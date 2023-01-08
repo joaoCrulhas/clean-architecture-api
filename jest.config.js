@@ -7,7 +7,8 @@ export default {
   transform: {
     '^.+\\.(ts|tsx)$': 'ts-jest'
   },
-  testEnvironment: 'node',
+  // testEnvironment: 'node',
   coverageDirectory: 'coverage',
-  coveragePathIgnorePatterns: ['/node_modules/']
+  coveragePathIgnorePatterns: ['/node_modules/'],
+  preset: '@shelf/jest-mongodb'
 };
