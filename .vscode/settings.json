@@ -7,6 +7,7 @@
   "Utils",
   "DataLayer",
   "RepositoryData",
-  "Repository"
+  "Repository",
+  "Middlewares"
 ]
 }
