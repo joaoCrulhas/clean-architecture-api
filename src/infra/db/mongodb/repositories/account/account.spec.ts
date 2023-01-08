@@ -1,7 +1,6 @@
 import { AddAccountDTO } from '../../../../../domain/use-cases/add-account.usecase';
 import { AccountRepositoryMongo } from './account';
-import { Db, MongoClient } from 'mongodb';
-
+import { MongoHelper } from '../../helpers/mongo.helper';
 const customDescribeOrSkip = process.env.MONGO_URL ? describe : describe.skip;
 console.log('MongoURL', process.env.MONGO_URL);
 const makeSut = () => {
@@ -11,13 +10,9 @@ const makeSut = () => {
   };
 };
 customDescribeOrSkip('AccountRepository@MongoDB', () => {
-  let connection: MongoClient;
-  let db: Db;
-
   beforeAll(async () => {
     const mongoUrl = process.env.MONGO_URL as string;
-    connection = await MongoClient.connect(mongoUrl);
-    db = connection.db();
+    await MongoHelper.connect(mongoUrl);
   });
 
   it('should return an account on success', async () => {
@@ -29,9 +24,10 @@ customDescribeOrSkip('AccountRepository@MongoDB', () => {
     };
     const account = await sut.add(accountRequest);
     expect(account.email).toEqual('validMail@gmail.com');
+    expect(account.id).toBeTruthy();
   });
 
   afterAll(async () => {
-    await connection.close();
+    await MongoHelper.disconnect();
   });
 });
