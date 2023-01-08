@@ -1,2 +1,4 @@
 node_modules
 dist
+jest.config.js
+jest-unit.config.js
