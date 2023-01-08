@@ -1,4 +1,4 @@
-import express, { Express, Request, Response } from 'express';
+import express, { Express } from 'express';
 import { middlewares } from './middlewares';
 import { setupRoutes } from './routes';
 const app: Express = express();
