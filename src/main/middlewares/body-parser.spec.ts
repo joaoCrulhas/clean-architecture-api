@@ -1,6 +1,5 @@
 import request from 'supertest';
 import { app } from '../config/app';
-import { response } from 'express';
 
 describe('BodyParser middleware', () => {
   it('should parse json request', async () => {
