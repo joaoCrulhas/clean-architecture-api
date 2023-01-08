@@ -15,7 +15,7 @@ class DbAddAccount implements AddAccount {
     username
   }: AddAccountDTO): Promise<AccountModel> {
     const encryptedPassword = await this.encrypter.encrypt(password);
-    return await this.addAccountRepository.exec({
+    return await this.addAccountRepository.add({
       email,
       password: encryptedPassword,
       username

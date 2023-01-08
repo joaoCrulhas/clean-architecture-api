@@ -15,7 +15,7 @@ interface SystemUnderTest {
 
 const makeAddAccountRepository = () => {
   class AddAccountRepositoryStub implements AddAccountRepository {
-    exec(accountDTO: AddAccountDTO): Promise<AccountModel> {
+    add(accountDTO: AddAccountDTO): Promise<AccountModel> {
       return Promise.resolve({
         email: accountDTO.email,
         id: 'hashedId',
@@ -64,7 +64,7 @@ describe('DbAccount', () => {
       password: 'valid_password'
     };
     const { sut, encrypter, addAccountRepository } = makeSut();
-    const aSpy = jest.spyOn(addAccountRepository, 'exec');
+    const aSpy = jest.spyOn(addAccountRepository, 'add');
     jest.spyOn(encrypter, 'encrypt').mockResolvedValueOnce('encryptedPassword');
     await sut.exec(request);
     expect(aSpy).toBeCalledWith({
@@ -98,7 +98,7 @@ describe('DbAccount', () => {
       password: 'valid_password'
     };
     const { sut, addAccountRepository } = makeSut();
-    jest.spyOn(addAccountRepository, 'exec').mockImplementationOnce(() => {
+    jest.spyOn(addAccountRepository, 'add').mockImplementationOnce(() => {
       return Promise.reject(new Error('addAccountRepository_error'));
     });
     try {
@@ -122,7 +122,7 @@ describe('DbAccount', () => {
     };
     const { sut, addAccountRepository, encrypter } = makeSut();
     jest.spyOn(encrypter, 'encrypt').mockResolvedValueOnce('encryptedPassword');
-    jest.spyOn(addAccountRepository, 'exec').mockResolvedValueOnce(response);
+    jest.spyOn(addAccountRepository, 'add').mockResolvedValueOnce(response);
     const accountCretead = await sut.exec(request);
     expect(accountCretead).toStrictEqual(response);
   });
