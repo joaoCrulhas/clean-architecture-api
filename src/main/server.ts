@@ -1,5 +1,5 @@
-import express, { Express, Request, Response } from 'express';
-const app: Express = express();
+import { app } from './config/app';
+
 const port = 5000;
 app.listen(port, () => {
   console.log(`Running ${port}`);
