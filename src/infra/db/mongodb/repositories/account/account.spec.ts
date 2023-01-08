@@ -15,6 +15,11 @@ customDescribeOrSkip('AccountRepository@MongoDB', () => {
     await MongoHelper.connect(mongoUrl);
   });
 
+  beforeEach(async () => {
+    const accountCollection = MongoHelper.getCollection('accounts');
+    await accountCollection.deleteMany({});
+  });
+
   it('should return an account on success', async () => {
     const { sut } = makeSut();
     const accountRequest: AddAccountDTO = {

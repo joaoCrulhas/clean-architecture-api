@@ -16,6 +16,14 @@ class AccountRepositoryMongo implements AddAccountRepository {
       username
     });
     const id = insertedId.toString();
+    console.log(
+      'New account created',
+      JSON.stringify({
+        id,
+        email,
+        password
+      })
+    );
     return Promise.resolve({
       id,
       email,
