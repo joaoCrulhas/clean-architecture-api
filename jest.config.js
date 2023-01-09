@@ -10,5 +10,10 @@ module.exports = {
   // testEnvironment: 'node',
   coverageDirectory: 'coverage',
   coveragePathIgnorePatterns: ['/node_modules/'],
-  preset: '@shelf/jest-mongodb'
+  preset: '@shelf/jest-mongodb',
+  collectCoverageFrom: [
+    '!**/node_modules/**',
+    '!**/vendor/**',
+    '!<rootDir>/src/main/**'
+  ],
 };
