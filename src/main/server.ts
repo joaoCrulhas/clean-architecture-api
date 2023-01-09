@@ -1,7 +1,15 @@
+import { MongoHelper } from '../infra/db/mongodb/helpers/mongo.helper';
 import { app } from './config/app';
+import { envVariables } from './config/env';
 
-const port = 5000;
-app.listen(port, () => {
-  console.log(`Running ${port}`);
-});
-console.log(1);
+const port = envVariables.port;
+MongoHelper.connect(envVariables.mongodbUrl)
+  .then((client) => {
+    console.log('mongodbConnected');
+    app.listen(port, () => {
+      console.log(`Running ${port}`);
+    });
+  })
+  .catch((error) => {
+    console.error(error);
+  });
