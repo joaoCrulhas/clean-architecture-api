@@ -1,9 +1,10 @@
 import { Router } from 'express';
-
+import { makeSignupController } from '../factories/signup.factory';
+import { adapterController } from '../adapters/express-route-adapter';
 const signupRoutes = (router: Router) => {
-  router.post('/signup', (req, res) => {
-    res.json({ test: true }).status(200);
-  });
+  console.log('signupRoutes');
+  const signupController = makeSignupController();
+  router.post('/signup', adapterController(signupController));
 };
 
 export { signupRoutes };
