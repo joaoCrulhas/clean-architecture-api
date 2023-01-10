@@ -5,6 +5,7 @@ import { ServerError } from '../errors/server-error.error';
 import { HTTP_RESPONSE_CODE } from '../helpers/http-code.helper';
 import {
   badRequest,
+  serverError,
   successCreatedResource
 } from '../helpers/http-response-factory.helper';
 import { EmailValidator, HttpResponse } from '../protocols';
@@ -70,10 +71,7 @@ class SignupController implements Controller<HttpRequest<BodySignupRequest>> {
       });
       return successCreatedResource(accountCreated);
     } catch (error: Error | any) {
-      return {
-        statusCode: HTTP_RESPONSE_CODE.serverError,
-        data: new ServerError(error.stack)
-      };
+      return serverError(error);
     }
   }
 }

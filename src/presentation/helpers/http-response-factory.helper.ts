@@ -1,4 +1,5 @@
 import { MissingParamError } from '../errors/missing-param.error';
+import { ServerError } from '../errors/server-error.error';
 import { HttpResponse } from '../protocols';
 import { HTTP_RESPONSE_CODE } from './http-code.helper';
 
@@ -16,4 +17,12 @@ const successCreatedResource = (resource: any): HttpResponse => {
   };
 };
 
-export { badRequest, successCreatedResource };
+const serverError = (error: Error): HttpResponse => {
+  const stackError = error.stack || 'stack_not_provided';
+  return {
+    statusCode: HTTP_RESPONSE_CODE.serverError,
+    data: new ServerError(stackError)
+  };
+};
+
+export { badRequest, successCreatedResource, serverError };

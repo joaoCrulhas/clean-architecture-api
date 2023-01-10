@@ -2,6 +2,7 @@ import { Controller } from '../../presentation/controllers/controller.protocol';
 import { ServerError } from '../../presentation/errors/server-error.error';
 import { HTTP_RESPONSE_CODE } from '../../presentation/helpers/http-code.helper';
 import { HttpRequest, HttpResponse } from '../../presentation/protocols';
+import { BodySignupRequest } from '../../presentation/protocols/http-request.protocol';
 import { LoggerDecorator } from './logger-decorator';
 
 interface SystemUnderTest {
@@ -79,11 +80,27 @@ describe('Logger Decorator', () => {
         test: true
       }
     });
-
-    console.log(response);
     const getApiResult = (): Promise<HttpResponse> =>
       aSpy.mock.results[0].value;
     const controllerResponse = await getApiResult();
     expect(response.statusCode).toEqual(controllerResponse.statusCode);
+  });
+
+  it('Should call LogRepository if controller return a server error', async () => {
+    const { sut, controller } = makeSut();
+    const httpResponse: HttpResponse = {
+      statusCode: HTTP_RESPONSE_CODE.serverError,
+      data: new ServerError('serverError')
+    };
+    jest.spyOn(controller, 'exec').mockResolvedValueOnce(httpResponse);
+    const httpRequest: HttpRequest<BodySignupRequest> = {
+      body: {
+        email: 'valid@gmail.com',
+        password: '123',
+        passwordConfirmation: '123',
+        username: 'validUsernae'
+      }
+    };
+    await sut.exec(httpRequest);
   });
 });
