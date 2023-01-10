@@ -69,10 +69,10 @@ class SignupController implements Controller<HttpRequest<BodySignupRequest>> {
         username
       });
       return successCreatedResource(accountCreated);
-    } catch (error: any) {
+    } catch (error: Error | any) {
       return {
         statusCode: HTTP_RESPONSE_CODE.serverError,
-        data: new ServerError()
+        data: new ServerError(error.stack)
       };
     }
   }

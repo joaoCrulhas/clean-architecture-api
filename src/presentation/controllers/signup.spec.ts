@@ -185,7 +185,7 @@ describe('SignUp Controller', () => {
     };
     const { statusCode, data } = await sut.exec(request);
     expect(statusCode).toEqual(HTTP_RESPONSE_CODE.serverError);
-    expect(data).toEqual(new ServerError());
+    expect(data).toEqual(new ServerError('ServerErrror'));
   });
 
   it('should return an error if passwordConfirmation is different than password', async () => {
@@ -226,7 +226,7 @@ describe('SignUp Controller', () => {
   it('Should throw an error if AddAccount throws', async function () {
     const { sut, addAccountStub } = makeSut();
     jest.spyOn(addAccountStub, 'exec').mockImplementationOnce(() => {
-      return Promise.reject(new Error());
+      return Promise.reject(new Error('serverError'));
     });
     const request = {
       body: {
@@ -238,7 +238,7 @@ describe('SignUp Controller', () => {
     };
     const response = await sut.exec(request);
     expect(response.statusCode).toEqual(500);
-    expect(response.data).toEqual(new ServerError());
+    expect(response.data).toEqual(new ServerError('serverError'));
   });
 
   it('Should return 200 if addAccount executed successfully', async function () {

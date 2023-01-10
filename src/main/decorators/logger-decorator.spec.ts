@@ -12,7 +12,6 @@ interface SystemUnderTest {
 const makeControllerStub = (): Controller<any> => {
   class ControllerStub implements Controller<HttpRequest<any>> {
     exec(request: HttpRequest<any>): Promise<HttpResponse> {
-      console.log(request);
       const response: HttpResponse = {
         statusCode: HTTP_RESPONSE_CODE.created
       };
@@ -61,7 +60,7 @@ describe('Logger Decorator', () => {
     const aSpy = jest.spyOn(console, 'error');
     const response: HttpResponse = {
       statusCode: 500,
-      data: new ServerError()
+      data: new ServerError('server error mock')
     };
     jest.spyOn(controller, 'exec').mockResolvedValueOnce(response);
     await sut.exec({
@@ -70,5 +69,21 @@ describe('Logger Decorator', () => {
       }
     });
     expect(aSpy).toHaveBeenCalled();
+  });
+
+  it('Should decorator return the same value that is returned into controller', async () => {
+    const { sut, controller } = makeSut();
+    const aSpy = jest.spyOn(controller, 'exec');
+    const response = await sut.exec({
+      body: {
+        test: true
+      }
+    });
+
+    console.log(response);
+    const getApiResult = (): Promise<HttpResponse> =>
+      aSpy.mock.results[0].value;
+    const controllerResponse = await getApiResult();
+    expect(response.statusCode).toEqual(controllerResponse.statusCode);
   });
 });
