@@ -70,7 +70,6 @@ class SignupController implements Controller<HttpRequest<BodySignupRequest>> {
       });
       return successCreatedResource(accountCreated);
     } catch (error: any) {
-      console.log(error);
       return {
         statusCode: HTTP_RESPONSE_CODE.serverError,
         data: new ServerError()

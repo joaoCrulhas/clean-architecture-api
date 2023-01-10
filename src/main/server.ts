@@ -4,8 +4,7 @@ import { envVariables } from './config/env';
 
 const port = envVariables.port;
 MongoHelper.connect(envVariables.mongodbUrl)
-  .then((client) => {
-    console.log('mongodbConnected');
+  .then(() => {
     app.listen(port, () => {
       console.log(`Running ${port}`);
     });
