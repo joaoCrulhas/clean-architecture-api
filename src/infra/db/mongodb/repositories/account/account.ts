@@ -9,7 +9,7 @@ class AccountRepositoryMongo implements AddAccountRepository {
     password,
     username
   }: AddAccountDTO): Promise<AccountModel> {
-    const accountCollection = MongoHelper.getCollection('accounts');
+    const accountCollection = await MongoHelper.getCollection('accounts');
     const { insertedId } = await accountCollection.insertOne({
       email,
       password,
