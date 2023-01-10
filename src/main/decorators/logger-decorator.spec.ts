@@ -1,3 +1,4 @@
+import { LoggerErrorRepository } from '../../data/protocols/log-error-repository';
 import { Controller } from '../../presentation/controllers/controller.protocol';
 import { ServerError } from '../../presentation/errors/server-error.error';
 import { HTTP_RESPONSE_CODE } from '../../presentation/helpers/http-code.helper';
@@ -8,6 +9,7 @@ import { LoggerDecorator } from './logger-decorator';
 interface SystemUnderTest {
   sut: LoggerDecorator;
   controller: Controller<any>;
+  logErrorRepository: LoggerErrorRepository;
 }
 
 const makeControllerStub = (): Controller<any> => {
@@ -21,11 +23,20 @@ const makeControllerStub = (): Controller<any> => {
   }
   return new ControllerStub();
 };
+const makeLogErrorRepository = (): LoggerErrorRepository => {
+  class LogErrorRepositoryStub implements LoggerErrorRepository {
+    log(stack: string): Promise<void> {
+      return Promise.resolve();
+    }
+  }
+  return new LogErrorRepositoryStub();
+};
 
 const makeSut = (): SystemUnderTest => {
   const controllerSutb = makeControllerStub();
-  const sut = new LoggerDecorator(controllerSutb);
-  return { sut, controller: controllerSutb };
+  const logErrorRepository = makeLogErrorRepository();
+  const sut = new LoggerDecorator(controllerSutb, logErrorRepository);
+  return { sut, controller: controllerSutb, logErrorRepository };
 };
 
 describe('Logger Decorator', () => {
@@ -86,13 +97,12 @@ describe('Logger Decorator', () => {
     expect(response.statusCode).toEqual(controllerResponse.statusCode);
   });
 
-  it('Should call LogRepository if controller return a server error', async () => {
-    const { sut, controller } = makeSut();
+  it('Should call LogRepositoryRepository if controller return a server error', async () => {
+    const { sut, controller, logErrorRepository } = makeSut();
     const httpResponse: HttpResponse = {
       statusCode: HTTP_RESPONSE_CODE.serverError,
       data: new ServerError('serverError')
     };
-    jest.spyOn(controller, 'exec').mockResolvedValueOnce(httpResponse);
     const httpRequest: HttpRequest<BodySignupRequest> = {
       body: {
         email: 'valid@gmail.com',
@@ -101,6 +111,9 @@ describe('Logger Decorator', () => {
         username: 'validUsernae'
       }
     };
+    jest.spyOn(controller, 'exec').mockResolvedValueOnce(httpResponse);
+    const aSpy = jest.spyOn(logErrorRepository, 'log');
     await sut.exec(httpRequest);
+    expect(aSpy).toBeCalled();
   });
 });
