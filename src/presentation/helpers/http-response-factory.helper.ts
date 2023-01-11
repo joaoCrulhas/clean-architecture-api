@@ -1,4 +1,3 @@
-import { MissingParamError } from '../errors/missing-param.error';
 import { ServerError } from '../errors/server-error.error';
 import { HttpResponse } from '../protocols';
 import { HTTP_RESPONSE_CODE } from './http-code.helper';
@@ -25,4 +24,11 @@ const serverError = (error: Error): HttpResponse => {
   };
 };
 
-export { badRequest, successCreatedResource, serverError };
+const successRequest = (resource: any): HttpResponse => {
+  return {
+    statusCode: HTTP_RESPONSE_CODE.created,
+    data: resource
+  };
+};
+
+export { badRequest, successCreatedResource, serverError, successRequest };

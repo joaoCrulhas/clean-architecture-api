@@ -8,3 +8,8 @@ export interface BodySignupRequest {
   passwordConfirmation: string;
   email: string;
 }
+
+export interface LoginRequest {
+  login: string;
+  password: string;
+}
