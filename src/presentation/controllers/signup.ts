@@ -1,8 +1,6 @@
 import { AddAccount } from '../../domain/use-cases';
 import { InvalidParamError } from '../errors/invalid-param.error';
 import { MissingParamError } from '../errors/missing-param.error';
-import { ServerError } from '../errors/server-error.error';
-import { HTTP_RESPONSE_CODE } from '../helpers/http-code.helper';
 import {
   badRequest,
   serverError,

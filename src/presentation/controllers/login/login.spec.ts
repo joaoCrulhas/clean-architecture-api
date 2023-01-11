@@ -1,18 +1,40 @@
+import { EmailValidatorAdapter } from '../../../utils/email-validator-adapter';
 import { MissingParamError } from '../../errors/missing-param.error';
 import { badRequest } from '../../helpers/http-response-factory.helper';
-import { HttpRequest, HttpResponse } from '../../protocols';
+import { EmailValidator, HttpRequest } from '../../protocols';
 import { LoginRequest } from '../../protocols/http-request.protocol';
 import { Controller } from '../controller.protocol';
 import { LoginController } from './login';
 
 interface SystemUnderTest {
   sut: Controller<HttpRequest<LoginRequest>>;
+  emailValidator: EmailValidator;
 }
 
 const makeSut = (): SystemUnderTest => {
-  const sut = new LoginController();
+  const emailValidator = new EmailValidatorAdapter();
+  const sut = new LoginController(emailValidator);
   return {
-    sut
+    sut,
+    emailValidator
+  };
+};
+
+const makeHttpLoginRequestWithEmail = () => {
+  return {
+    body: {
+      login: 'validEmail@gmail.com',
+      password: 'password123'
+    }
+  };
+};
+
+const makeHttpLoginRequestUsername = () => {
+  return {
+    body: {
+      login: 'validUsername',
+      password: 'password123'
+    }
   };
 };
 
@@ -30,7 +52,6 @@ describe('LoginController', () => {
     const response = await sut.exec(loginRequest);
     expect(response).toEqual(badRequest(new MissingParamError('password')));
   });
-
   it('Should return an error if email is not provided', async () => {
     const { sut } = makeSut();
     const loginRequest: HttpRequest<LoginRequest> = {
@@ -42,5 +63,11 @@ describe('LoginController', () => {
     };
     const response = await sut.exec(loginRequest);
     expect(response).toEqual(badRequest(new MissingParamError('login')));
+  });
+  it('Should execute emailValidator if the login provided is a valid email', async () => {
+    const { sut, emailValidator } = makeSut();
+    const aSpy = jest.spyOn(emailValidator, 'isValid');
+    await sut.exec(makeHttpLoginRequestWithEmail());
+    expect(aSpy).toBeCalled();
   });
 });
