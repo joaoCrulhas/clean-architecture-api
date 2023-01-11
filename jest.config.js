@@ -16,4 +16,6 @@ module.exports = {
     '!**/vendor/**',
     '!<rootDir>/src/main/**'
   ],
+  coverageReporters: ["json", "html"]
+
 };
