@@ -1,5 +1,6 @@
 import { LoggerErrorRepository } from '../../data/protocols/log-error-repository';
 import { Controller } from '../../presentation/controllers/controller.protocol';
+import { ServerError } from '../../presentation/errors/server-error.error';
 import { HTTP_RESPONSE_CODE } from '../../presentation/helpers/http-code.helper';
 import { HttpRequest, HttpResponse } from '../../presentation/protocols';
 
@@ -20,7 +21,10 @@ class LoggerDecorator implements Controller<HttpRequest<any>> {
       console.error(
         `Status code =${statusCode}, error = ${JSON.stringify(data)}`
       );
-      await this.logErrorRepository.log(data);
+      const errorData = data as ServerError;
+      await this.logErrorRepository.log(
+        errorData.stack || 'stack_not_provided'
+      );
     }
     return {
       statusCode,
