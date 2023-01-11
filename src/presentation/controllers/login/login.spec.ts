@@ -69,5 +69,12 @@ describe('LoginController', () => {
     const aSpy = jest.spyOn(emailValidator, 'isValid');
     await sut.exec(makeHttpLoginRequestWithEmail());
     expect(aSpy).toBeCalled();
+    expect(aSpy).toBeCalledWith('validEmail@gmail.com');
+  });
+  it('Should not execute emailValidator if the login provided is a valid Username', async () => {
+    const { sut, emailValidator } = makeSut();
+    const aSpy = jest.spyOn(emailValidator, 'isValid');
+    await sut.exec(makeHttpLoginRequestUsername());
+    expect(aSpy).not.toBeCalled();
   });
 });

@@ -1,3 +1,4 @@
+import { emailCandidate } from '../../../utils/email-candidate.utils';
 import { InvalidParamError } from '../../errors/invalid-param.error';
 import { MissingParamError } from '../../errors/missing-param.error';
 import {
@@ -39,10 +40,14 @@ class LoginController implements Controller<HttpRequest<LoginRequest>> {
       return badRequest(new MissingParamError('body'));
     }
     const { login } = request.body;
-    const isValidEmail = this.emailValidator.isValid(login);
-    if (!isValidEmail) {
-      return badRequest(new InvalidParamError('login'));
+    if (emailCandidate(login)) {
+      // login with email
+      const isValidEmail = this.emailValidator.isValid(login);
+      if (!isValidEmail) {
+        return badRequest(new InvalidParamError('login'));
+      }
     }
+
     return successCreatedResource(true);
   }
 }
