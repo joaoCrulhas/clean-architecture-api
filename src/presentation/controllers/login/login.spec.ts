@@ -5,6 +5,15 @@ import { EmailValidator, HttpRequest } from '../../protocols';
 import { LoginRequest } from '../../protocols/http-request.protocol';
 import { Controller } from '../controller.protocol';
 import { LoginController } from './login';
+jest.mock('../../../utils/email-validator-adapter', () => {
+  return {
+    EmailValidatorAdapter: jest.fn().mockImplementation(() => {
+      return {
+        isValid: jest.fn(() => true)
+      };
+    })
+  };
+});
 
 interface SystemUnderTest {
   sut: Controller<HttpRequest<LoginRequest>>;
