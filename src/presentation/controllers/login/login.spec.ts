@@ -146,6 +146,21 @@ describe('LoginController', () => {
       password: 'password123'
     });
   });
+  it('should return a internal server error if Authentication throws an error', async () => {
+    const { sut, authenticator } = makeSut();
+    const myMockFn = jest.fn().mockImplementationOnce(() => {
+      throw new Error('server_error');
+    });
+    jest.spyOn(authenticator, 'auth').mockImplementationOnce(myMockFn);
+    const request: HttpRequest<LoginRequest> = {
+      body: {
+        password: 'Password',
+        login: 'invalidGmail@any.com'
+      }
+    };
+    const response = await sut.exec(request);
+    expect(response).toEqual(serverError(new Error('server_error')));
+  });
   it('should return a 401(unauthorized) if the credentials are wrong', async () => {
     const { sut, authenticator } = makeSut();
     const mockImpelmentation = jest.fn().mockImplementationOnce(() => {
