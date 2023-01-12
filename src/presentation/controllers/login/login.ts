@@ -1,4 +1,3 @@
-import { AuthenticationModel } from '../../../domain/models/authentication.model';
 import { AuthenticationAccount } from '../../../domain/use-cases/authentication-account.usecase';
 import { emailCandidate } from '../../../utils/email-candidate.utils';
 import { InvalidParamError } from '../../errors/invalid-param.error';
@@ -7,7 +6,6 @@ import { UnauthorizedError } from '../../errors/unauthorized-error';
 import {
   badRequest,
   serverError,
-  successCreatedResource,
   successRequest,
   unauthorized
 } from '../../helpers/http-response-factory.helper';
