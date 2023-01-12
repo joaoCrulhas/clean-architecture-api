@@ -174,4 +174,11 @@ describe('LoginController', () => {
       unauthorized(new UnauthorizedError('Credentials invalid'))
     );
   });
+  it('should return a 200 if authentiacation works successfully', async () => {
+    const { sut } = makeSut();
+    const response = await sut.exec(makeHttpLoginRequestWithEmail());
+    expect(response.data.token).toEqual('any_token');
+    expect(response.data.login).toEqual('validEmail@gmail.com');
+    expect(response.statusCode).toEqual(200);
+  });
 });

@@ -1,3 +1,4 @@
+import { AuthenticationModel } from '../../../domain/models/authentication.model';
 import { AuthenticationAccount } from '../../../domain/use-cases/authentication-account.usecase';
 import { emailCandidate } from '../../../utils/email-candidate.utils';
 import { InvalidParamError } from '../../errors/invalid-param.error';
@@ -7,6 +8,7 @@ import {
   badRequest,
   serverError,
   successCreatedResource,
+  successRequest,
   unauthorized
 } from '../../helpers/http-response-factory.helper';
 import { EmailValidator, HttpRequest, HttpResponse } from '../../protocols';
@@ -62,7 +64,11 @@ class LoginController implements Controller<HttpRequest<LoginRequest>> {
       if (!auth) {
         return unauthorized(new UnauthorizedError('Credentials invalid'));
       }
-      return successCreatedResource(true);
+      return successRequest({
+        expireAt: new Date(),
+        token: 'any_token',
+        login
+      });
     } catch (error: Error | any) {
       return serverError(error);
     }

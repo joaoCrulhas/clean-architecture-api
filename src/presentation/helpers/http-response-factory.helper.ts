@@ -34,7 +34,7 @@ const serverError = (error: Error): HttpResponse => {
 
 const successRequest = (resource: any): HttpResponse => {
   return {
-    statusCode: HTTP_RESPONSE_CODE.created,
+    statusCode: HTTP_RESPONSE_CODE.success,
     data: resource
   };
 };
