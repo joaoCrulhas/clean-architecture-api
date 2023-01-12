@@ -1,17 +1,17 @@
-import { AddAccount } from '../../domain/use-cases';
-import { InvalidParamError } from '../errors/invalid-param.error';
-import { MissingParamError } from '../errors/missing-param.error';
+import { AddAccount } from '../../../domain/use-cases';
+import { InvalidParamError } from '../../errors/invalid-param.error';
+import { MissingParamError } from '../../errors/missing-param.error';
 import {
   badRequest,
   serverError,
   successCreatedResource
-} from '../helpers/http-response-factory.helper';
-import { EmailValidator, HttpResponse } from '../protocols';
+} from '../../helpers/http-response-factory.helper';
+import { EmailValidator, HttpResponse } from '../../protocols';
 import {
   HttpRequest,
   BodySignupRequest
-} from '../protocols/http-request.protocol';
-import { Controller } from './controller.protocol';
+} from '../../protocols/http-request.protocol';
+import { Controller } from '../controller.protocol';
 
 class SignupController implements Controller<HttpRequest<BodySignupRequest>> {
   private requiredFields: string[] = [];

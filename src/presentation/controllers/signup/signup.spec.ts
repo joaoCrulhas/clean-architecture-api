@@ -1,12 +1,12 @@
-import { AccountModel } from '../../domain/models/account.model';
-import { AddAccount } from '../../domain/use-cases';
-import { AddAccountDTO } from '../../domain/use-cases/add-account.usecase';
-import { InvalidParamError } from '../errors/invalid-param.error';
-import { MissingParamError } from '../errors/missing-param.error';
-import { ServerError } from '../errors/server-error.error';
-import { HTTP_RESPONSE_CODE } from '../helpers/http-code.helper';
-import { EmailValidator, HttpRequest } from '../protocols';
-import { BodySignupRequest } from '../protocols/http-request.protocol';
+import { AccountModel } from '../../../domain/models/account.model';
+import { AddAccount } from '../../../domain/use-cases';
+import { AddAccountDTO } from '../../../domain/use-cases/add-account.usecase';
+import { InvalidParamError } from '../../errors/invalid-param.error';
+import { MissingParamError } from '../../errors/missing-param.error';
+import { ServerError } from '../../errors/server-error.error';
+import { HTTP_RESPONSE_CODE } from '../../helpers/http-code.helper';
+import { EmailValidator, HttpRequest } from '../../protocols';
+import { BodySignupRequest } from '../../protocols/http-request.protocol';
 import { SignupController } from './signup';
 
 /*
