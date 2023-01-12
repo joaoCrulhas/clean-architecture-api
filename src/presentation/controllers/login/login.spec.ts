@@ -3,9 +3,11 @@ import { AuthenticationAccount } from '../../../domain/use-cases/authentication-
 import { EmailValidatorAdapter } from '../../../utils/email-validator-adapter';
 import { InvalidParamError } from '../../errors/invalid-param.error';
 import { MissingParamError } from '../../errors/missing-param.error';
+import { UnauthorizedError } from '../../errors/unauthorized-error';
 import {
   badRequest,
-  serverError
+  serverError,
+  unauthorized
 } from '../../helpers/http-response-factory.helper';
 import { EmailValidator, HttpRequest } from '../../protocols';
 import { LoginRequest } from '../../protocols/http-request.protocol';
@@ -69,7 +71,6 @@ const makeHttpLoginRequestUsername = () => {
 };
 
 describe('LoginController', () => {
-  //1) To do a Login the user should provide the email(or username) and the password
   it('Should return an error if password is not provided', async () => {
     const { sut } = makeSut();
     const loginRequest: HttpRequest<LoginRequest> = {
@@ -120,7 +121,6 @@ describe('LoginController', () => {
     const response = await sut.exec(request);
     expect(response).toEqual(badRequest(new InvalidParamError('login')));
   });
-
   it('should return a internal server error if Emailvalidator throws an error', async () => {
     const { sut, emailValidator } = makeSut();
     const myMockFn = jest.fn().mockImplementationOnce(() => {
@@ -145,5 +145,18 @@ describe('LoginController', () => {
       login: 'validEmail@gmail.com',
       password: 'password123'
     });
+  });
+  it('should return a 401(unauthorized) if the credentials are wrong', async () => {
+    const { sut, authenticator } = makeSut();
+    const mockImpelmentation = jest.fn().mockImplementationOnce(() => {
+      return null;
+    });
+    jest
+      .spyOn(authenticator, 'auth')
+      .mockImplementationOnce(mockImpelmentation);
+    const response = await sut.exec(makeHttpLoginRequestWithEmail());
+    expect(response).toEqual(
+      unauthorized(new UnauthorizedError('Credentials invalid'))
+    );
   });
 });

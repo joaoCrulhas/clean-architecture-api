@@ -1,10 +1,18 @@
 import { ServerError } from '../errors/server-error.error';
+import { UnauthorizedError } from '../errors/unauthorized-error';
 import { HttpResponse } from '../protocols';
 import { HTTP_RESPONSE_CODE } from './http-code.helper';
 
 const badRequest = (error: Error): HttpResponse => {
   return {
     statusCode: HTTP_RESPONSE_CODE.badRequest,
+    data: error
+  };
+};
+
+const unauthorized = (error: UnauthorizedError): HttpResponse => {
+  return {
+    statusCode: HTTP_RESPONSE_CODE.unauthorized,
     data: error
   };
 };
@@ -31,4 +39,10 @@ const successRequest = (resource: any): HttpResponse => {
   };
 };
 
-export { badRequest, successCreatedResource, serverError, successRequest };
+export {
+  badRequest,
+  successCreatedResource,
+  serverError,
+  successRequest,
+  unauthorized
+};

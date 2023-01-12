@@ -2,10 +2,12 @@ import { AuthenticationAccount } from '../../../domain/use-cases/authentication-
 import { emailCandidate } from '../../../utils/email-candidate.utils';
 import { InvalidParamError } from '../../errors/invalid-param.error';
 import { MissingParamError } from '../../errors/missing-param.error';
+import { UnauthorizedError } from '../../errors/unauthorized-error';
 import {
   badRequest,
   serverError,
-  successCreatedResource
+  successCreatedResource,
+  unauthorized
 } from '../../helpers/http-response-factory.helper';
 import { EmailValidator, HttpRequest, HttpResponse } from '../../protocols';
 import { LoginRequest } from '../../protocols/http-request.protocol';
@@ -53,10 +55,13 @@ class LoginController implements Controller<HttpRequest<LoginRequest>> {
           return badRequest(new InvalidParamError('login'));
         }
       }
-      await this.authenticator.auth({
+      const auth = await this.authenticator.auth({
         login,
         password
       });
+      if (!auth) {
+        return unauthorized(new UnauthorizedError('Credentials invalid'));
+      }
       return successCreatedResource(true);
     } catch (error: Error | any) {
       return serverError(error);
