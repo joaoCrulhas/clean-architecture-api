@@ -1,3 +1,5 @@
+import { AuthenticationModel } from '../../../domain/models/authentication.model';
+import { AuthenticationAccount } from '../../../domain/use-cases/authentication-account.usecase';
 import { EmailValidatorAdapter } from '../../../utils/email-validator-adapter';
 import { InvalidParamError } from '../../errors/invalid-param.error';
 import { MissingParamError } from '../../errors/missing-param.error';
@@ -22,12 +24,27 @@ jest.mock('../../../utils/email-validator-adapter', () => {
 interface SystemUnderTest {
   sut: Controller<HttpRequest<LoginRequest>>;
   emailValidator: EmailValidator;
+  authenticator: AuthenticationAccount;
 }
-
+const makeAuthenticatorStub = () => {
+  class AuthenticationAccountStub implements AuthenticationAccount {
+    auth({ password, login }: LoginRequest): Promise<AuthenticationModel> {
+      const response: AuthenticationModel = {
+        expireAt: new Date(),
+        login,
+        token: 'tokenTest'
+      };
+      return Promise.resolve(response);
+    }
+  }
+  return new AuthenticationAccountStub();
+};
 const makeSut = (): SystemUnderTest => {
   const emailValidator = new EmailValidatorAdapter();
-  const sut = new LoginController(emailValidator);
+  const authenticator = makeAuthenticatorStub();
+  const sut = new LoginController(emailValidator, authenticator);
   return {
+    authenticator,
     sut,
     emailValidator
   };
@@ -118,5 +135,15 @@ describe('LoginController', () => {
     };
     const response = await sut.exec(request);
     expect(response).toEqual(serverError(new Error('server_error')));
+  });
+  it('should call the Authentication@auth with correct arguments', async () => {
+    const { sut, authenticator } = makeSut();
+    const aSpy = jest.spyOn(authenticator, 'auth');
+    await sut.exec(makeHttpLoginRequestWithEmail());
+    expect(aSpy).toBeCalled();
+    expect(aSpy).toBeCalledWith({
+      login: 'validEmail@gmail.com',
+      password: 'password123'
+    });
   });
 });

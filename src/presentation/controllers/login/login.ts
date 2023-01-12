@@ -1,3 +1,4 @@
+import { AuthenticationAccount } from '../../../domain/use-cases/authentication-account.usecase';
 import { emailCandidate } from '../../../utils/email-candidate.utils';
 import { InvalidParamError } from '../../errors/invalid-param.error';
 import { MissingParamError } from '../../errors/missing-param.error';
@@ -12,7 +13,10 @@ import { Controller } from '../controller.protocol';
 
 class LoginController implements Controller<HttpRequest<LoginRequest>> {
   private readonly requiredFields: string[] = ['login', 'password'];
-  constructor(private readonly emailValidator: EmailValidator) {}
+  constructor(
+    private readonly emailValidator: EmailValidator,
+    private readonly authenticator: AuthenticationAccount
+  ) {}
 
   private validateRequiredFields({ body }: HttpRequest<LoginRequest>): {
     isValid: boolean;
@@ -41,7 +45,7 @@ class LoginController implements Controller<HttpRequest<LoginRequest>> {
       if (!request.body) {
         return badRequest(new MissingParamError('body'));
       }
-      const { login } = request.body;
+      const { login, password } = request.body;
       if (emailCandidate(login)) {
         // login with email
         const isValidEmail = this.emailValidator.isValid(login);
@@ -49,6 +53,10 @@ class LoginController implements Controller<HttpRequest<LoginRequest>> {
           return badRequest(new InvalidParamError('login'));
         }
       }
+      await this.authenticator.auth({
+        login,
+        password
+      });
       return successCreatedResource(true);
     } catch (error: Error | any) {
       return serverError(error);
