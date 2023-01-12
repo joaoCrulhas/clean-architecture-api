@@ -7,14 +7,20 @@ import { SignupController } from '../../presentation/controllers/signup/signup';
 import { HttpRequest } from '../../presentation/protocols';
 import { EmailValidatorAdapter } from '../../utils/email-validator-adapter';
 import { LogErrorRepositoryMongoDb } from '../../infra/db/mongodb/repositories/logs/error';
+import { makeSignupComposite } from './signup-validation.factory';
 
 const makeSignupController = (): Controller<HttpRequest<any>> => {
+  const validation = makeSignupComposite();
   const logErrorRepository = new LogErrorRepositoryMongoDb();
   const emailValidator = new EmailValidatorAdapter();
   const bcrypterAdapter = new BcryptAdapter(12);
   const accountRepository = new AccountRepositoryMongo();
   const dbAddAccount = new DbAddAccount(bcrypterAdapter, accountRepository);
-  const signupController = new SignupController(emailValidator, dbAddAccount);
+  const signupController = new SignupController(
+    emailValidator,
+    dbAddAccount,
+    validation
+  );
   return new LoggerDecorator(signupController, logErrorRepository);
 };
 

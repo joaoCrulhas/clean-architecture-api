@@ -14,48 +14,20 @@ import {
 import { Controller } from '../controller.protocol';
 
 class SignupController implements Controller<HttpRequest<BodySignupRequest>> {
-  private requiredFields: string[] = [];
   constructor(
     private readonly emailValidator: EmailValidator,
     private readonly addAccount: AddAccount,
     private readonly validation: Validation
-  ) {
-    this.requiredFields = [
-      'email',
-      'password',
-      'passwordConfirmation',
-      'username'
-    ];
-  }
-
-  private validateRequest(body: any): {
-    isValid: boolean;
-    missingParam: string;
-  } {
-    let isValid = true;
-    let missingParam = '';
-    this.requiredFields.forEach((requiredFiled) => {
-      const hasProperty = Object.prototype.hasOwnProperty.call(
-        body,
-        requiredFiled
-      );
-      if (!hasProperty) {
-        isValid = false;
-        missingParam = requiredFiled;
-      }
-    });
-    return {
-      isValid,
-      missingParam
-    };
-  }
+  ) {}
 
   async exec({ body }: HttpRequest<BodySignupRequest>): Promise<HttpResponse> {
     try {
-      this.validation.validate(body);
-      const requiredFields = this.validateRequest(body);
-      if (!requiredFields.isValid || !body) {
-        return badRequest(new MissingParamError(requiredFields.missingParam));
+      const { error } = this.validation.validate(body);
+      if (error) {
+        return badRequest(error);
+      }
+      if (!body) {
+        return badRequest(new MissingParamError('body'));
       }
       if (!this.emailValidator.isValid(body.email)) {
         return badRequest(new InvalidParamError('email'));

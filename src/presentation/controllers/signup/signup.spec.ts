@@ -2,11 +2,10 @@ import { AccountModel } from '../../../domain/models/account.model';
 import { AddAccount } from '../../../domain/use-cases';
 import { AddAccountDTO } from '../../../domain/use-cases/add-account.usecase';
 import { InvalidParamError } from '../../errors/invalid-param.error';
-import { MissingParamError } from '../../errors/missing-param.error';
 import { ServerError } from '../../errors/server-error.error';
 import { HTTP_RESPONSE_CODE } from '../../helpers/http-code.helper';
-import { EmailValidator, HttpRequest, Validation } from '../../protocols';
-import { BodySignupRequest } from '../../protocols/http-request.protocol';
+import { EmailValidator, Validation } from '../../protocols';
+import { ValidationResponse } from '../../protocols/validation.protocol';
 import { SignupController } from './signup';
 
 /*
@@ -22,8 +21,11 @@ interface SystemUnderTest {
 }
 const makeValidation = () => {
   class ValidationStub implements Validation {
-    validate(args: any): Error | null {
-      return null;
+    validate(args: number): ValidationResponse {
+      console.log(args);
+      return {
+        error: null
+      };
     }
   }
   return new ValidationStub();
@@ -61,83 +63,6 @@ const makeSut = (): SystemUnderTest => {
   };
 };
 describe('SignUp Controller', () => {
-  it('Should return a bad request if username is not provided', async function () {
-    const { sut } = makeSut();
-    const { statusCode } = await sut.exec({
-      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      //@ts-ignore
-      body: {
-        email: 'any_email@gmail.com',
-        password: 'any_password',
-        passwordConfirmation: 'any_password'
-      }
-    });
-    expect(statusCode).toEqual(400);
-  });
-  it('Should return the missing field in the response body', async function () {
-    const request: HttpRequest<BodySignupRequest> = {
-      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      //@ts-ignore
-      body: {
-        email: 'any_email@gmail.com',
-        password: 'any_password',
-        passwordConfirmation: 'any_password'
-      }
-    };
-    const { sut } = makeSut();
-    const { statusCode, data } = await sut.exec(request);
-    expect(statusCode).toEqual(400);
-    expect(data).toEqual(new MissingParamError('username'));
-  });
-
-  it('Should return an error message if email is not provided', async function () {
-    const request: HttpRequest<BodySignupRequest> = {
-      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      //@ts-ignore
-      body: {
-        username: 'any_username',
-        password: 'any_password',
-        passwordConfirmation: 'any_password'
-      }
-    };
-    const { sut } = makeSut();
-    const { statusCode, data } = await sut.exec(request);
-    expect(statusCode).toEqual(400);
-    expect(data).toEqual(new MissingParamError('email'));
-  });
-
-  it('Should return an error message if password is not provided', async function () {
-    const request: HttpRequest<BodySignupRequest> = {
-      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      //@ts-ignore
-      body: {
-        email: 'anyEmail@gmail.com',
-        username: 'any_username',
-        passwordConfirmation: 'any_password'
-      }
-    };
-    const { sut } = makeSut();
-    const { statusCode, data } = await sut.exec(request);
-    expect(statusCode).toEqual(400);
-    expect(data).toEqual(new MissingParamError('password'));
-  });
-
-  it('Should return an error message if passwordConfirmation is not provided', async function () {
-    const request: HttpRequest<BodySignupRequest> = {
-      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      //@ts-ignore
-      body: {
-        email: 'anyEmail@gmail.com',
-        username: 'any_username',
-        password: 'any_password'
-      }
-    };
-    const { sut } = makeSut();
-    const { statusCode, data } = await sut.exec(request);
-    expect(statusCode).toEqual(400);
-    expect(data).toEqual(new MissingParamError('passwordConfirmation'));
-  });
-
   it('Should execute at least one time the emailValidator@isValid if all fields is provided', function () {
     const { sut, emailValidator } = makeSut();
     const request = {
