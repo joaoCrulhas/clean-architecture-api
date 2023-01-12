@@ -6,7 +6,7 @@ import {
   serverError,
   successCreatedResource
 } from '../../helpers/http-response-factory.helper';
-import { EmailValidator, HttpResponse } from '../../protocols';
+import { EmailValidator, HttpResponse, Validation } from '../../protocols';
 import {
   HttpRequest,
   BodySignupRequest
@@ -17,7 +17,8 @@ class SignupController implements Controller<HttpRequest<BodySignupRequest>> {
   private requiredFields: string[] = [];
   constructor(
     private readonly emailValidator: EmailValidator,
-    private readonly addAccount: AddAccount
+    private readonly addAccount: AddAccount,
+    private readonly validation: Validation
   ) {
     this.requiredFields = [
       'email',
@@ -51,6 +52,7 @@ class SignupController implements Controller<HttpRequest<BodySignupRequest>> {
 
   async exec({ body }: HttpRequest<BodySignupRequest>): Promise<HttpResponse> {
     try {
+      this.validation.validate(body);
       const requiredFields = this.validateRequest(body);
       if (!requiredFields.isValid || !body) {
         return badRequest(new MissingParamError(requiredFields.missingParam));

@@ -30,7 +30,7 @@ interface SystemUnderTest {
 }
 const makeAuthenticatorStub = () => {
   class AuthenticationAccountStub implements AuthenticationAccount {
-    auth({ password, login }: LoginRequest): Promise<AuthenticationModel> {
+    auth({ login }: LoginRequest): Promise<AuthenticationModel> {
       const response: AuthenticationModel = {
         expireAt: new Date(),
         login,

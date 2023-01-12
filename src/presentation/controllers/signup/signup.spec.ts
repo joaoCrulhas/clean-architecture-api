@@ -5,7 +5,7 @@ import { InvalidParamError } from '../../errors/invalid-param.error';
 import { MissingParamError } from '../../errors/missing-param.error';
 import { ServerError } from '../../errors/server-error.error';
 import { HTTP_RESPONSE_CODE } from '../../helpers/http-code.helper';
-import { EmailValidator, HttpRequest } from '../../protocols';
+import { EmailValidator, HttpRequest, Validation } from '../../protocols';
 import { BodySignupRequest } from '../../protocols/http-request.protocol';
 import { SignupController } from './signup';
 
@@ -18,7 +18,16 @@ interface SystemUnderTest {
   sut: SignupController;
   emailValidator: EmailValidator;
   addAccountStub: AddAccount;
+  validation: Validation;
 }
+const makeValidation = () => {
+  class ValidationStub implements Validation {
+    validate(args: any): Error | null {
+      return null;
+    }
+  }
+  return new ValidationStub();
+};
 
 const makeSut = (): SystemUnderTest => {
   class AddAccountStub implements AddAccount {
@@ -38,8 +47,15 @@ const makeSut = (): SystemUnderTest => {
   }
   const emailValidatorStub = new EmailValidatorStub();
   const addAccountStub = new AddAccountStub();
+  const validation = makeValidation();
+  const sut = new SignupController(
+    emailValidatorStub,
+    addAccountStub,
+    validation
+  );
   return {
-    sut: new SignupController(emailValidatorStub, addAccountStub),
+    validation,
+    sut,
     emailValidator: emailValidatorStub,
     addAccountStub
   };
@@ -260,6 +276,26 @@ describe('SignUp Controller', () => {
         username: 'any_username',
         id: 'hashId'
       }
+    });
+  });
+  it('should call validation with correct arguments', async () => {
+    const { sut, validation } = makeSut();
+    const aSpy = jest.spyOn(validation, 'validate');
+    const request = {
+      body: {
+        email: 'mail@gmail.com',
+        username: 'any_username',
+        password: 'any_password',
+        passwordConfirmation: 'any_password'
+      }
+    };
+    await sut.exec(request);
+    expect(aSpy).toBeCalled();
+    expect(aSpy).toBeCalledWith({
+      email: 'mail@gmail.com',
+      username: 'any_username',
+      password: 'any_password',
+      passwordConfirmation: 'any_password'
     });
   });
 });
