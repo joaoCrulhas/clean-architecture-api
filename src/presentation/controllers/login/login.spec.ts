@@ -1,7 +1,10 @@
 import { EmailValidatorAdapter } from '../../../utils/email-validator-adapter';
 import { InvalidParamError } from '../../errors/invalid-param.error';
 import { MissingParamError } from '../../errors/missing-param.error';
-import { badRequest } from '../../helpers/http-response-factory.helper';
+import {
+  badRequest,
+  serverError
+} from '../../helpers/http-response-factory.helper';
 import { EmailValidator, HttpRequest } from '../../protocols';
 import { LoginRequest } from '../../protocols/http-request.protocol';
 import { Controller } from '../controller.protocol';
@@ -99,5 +102,21 @@ describe('LoginController', () => {
     };
     const response = await sut.exec(request);
     expect(response).toEqual(badRequest(new InvalidParamError('login')));
+  });
+
+  it('should return a internal server error if Emailvalidator throws an error', async () => {
+    const { sut, emailValidator } = makeSut();
+    const myMockFn = jest.fn().mockImplementationOnce(() => {
+      throw new Error('server_error');
+    });
+    jest.spyOn(emailValidator, 'isValid').mockImplementationOnce(myMockFn);
+    const request: HttpRequest<LoginRequest> = {
+      body: {
+        password: 'Password',
+        login: 'invalidGmail@any.com'
+      }
+    };
+    const response = await sut.exec(request);
+    expect(response).toEqual(serverError(new Error('server_error')));
   });
 });

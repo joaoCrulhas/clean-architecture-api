@@ -3,6 +3,7 @@ import { InvalidParamError } from '../../errors/invalid-param.error';
 import { MissingParamError } from '../../errors/missing-param.error';
 import {
   badRequest,
+  serverError,
   successCreatedResource
 } from '../../helpers/http-response-factory.helper';
 import { EmailValidator, HttpRequest, HttpResponse } from '../../protocols';
@@ -32,23 +33,26 @@ class LoginController implements Controller<HttpRequest<LoginRequest>> {
     };
   }
   async exec(request: HttpRequest<LoginRequest>): Promise<HttpResponse> {
-    const { isValid, missingParam } = this.validateRequiredFields(request);
-    if (!isValid) {
-      return badRequest(new MissingParamError(missingParam));
-    }
-    if (!request.body) {
-      return badRequest(new MissingParamError('body'));
-    }
-    const { login } = request.body;
-    if (emailCandidate(login)) {
-      // login with email
-      const isValidEmail = this.emailValidator.isValid(login);
-      if (!isValidEmail) {
-        return badRequest(new InvalidParamError('login'));
+    try {
+      const { isValid, missingParam } = this.validateRequiredFields(request);
+      if (!isValid) {
+        return badRequest(new MissingParamError(missingParam));
       }
+      if (!request.body) {
+        return badRequest(new MissingParamError('body'));
+      }
+      const { login } = request.body;
+      if (emailCandidate(login)) {
+        // login with email
+        const isValidEmail = this.emailValidator.isValid(login);
+        if (!isValidEmail) {
+          return badRequest(new InvalidParamError('login'));
+        }
+      }
+      return successCreatedResource(true);
+    } catch (error: Error | any) {
+      return serverError(error);
     }
-
-    return successCreatedResource(true);
   }
 }
 
