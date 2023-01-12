@@ -1,4 +1,5 @@
 import { EmailValidatorAdapter } from '../../../utils/email-validator-adapter';
+import { InvalidParamError } from '../../errors/invalid-param.error';
 import { MissingParamError } from '../../errors/missing-param.error';
 import { badRequest } from '../../helpers/http-response-factory.helper';
 import { EmailValidator, HttpRequest } from '../../protocols';
@@ -85,5 +86,18 @@ describe('LoginController', () => {
     const aSpy = jest.spyOn(emailValidator, 'isValid');
     await sut.exec(makeHttpLoginRequestUsername());
     expect(aSpy).not.toBeCalled();
+  });
+  it;
+  it('Should return a badRequest if the login provided is an invalid email', async () => {
+    const { sut, emailValidator } = makeSut();
+    jest.spyOn(emailValidator, 'isValid').mockReturnValue(false);
+    const request: HttpRequest<LoginRequest> = {
+      body: {
+        password: 'Password',
+        login: 'invalidGmail@any.com'
+      }
+    };
+    const response = await sut.exec(request);
+    expect(response).toEqual(badRequest(new InvalidParamError('login')));
   });
 });
