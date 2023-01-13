@@ -22,7 +22,6 @@ interface SystemUnderTest {
 const makeValidation = () => {
   class ValidationStub implements Validation {
     validate(args: number): ValidationResponse {
-      console.log(args);
       return {
         error: null
       };
@@ -130,7 +129,7 @@ describe('SignUp Controller', () => {
   });
 
   it('should return an error if passwordConfirmation is different than password', async () => {
-    const { sut } = makeSut();
+    const { sut, validation } = makeSut();
     const request = {
       body: {
         email: 'mail@gmail.com',
@@ -139,6 +138,9 @@ describe('SignUp Controller', () => {
         passwordConfirmation: 'any_password_error'
       }
     };
+    jest.spyOn(validation, 'validate').mockReturnValueOnce({
+      error: new InvalidParamError('passwordConfirmation')
+    });
     const { statusCode, data } = await sut.exec(request);
     expect(statusCode).toEqual(HTTP_RESPONSE_CODE.badRequest);
     expect(data).toEqual(new InvalidParamError('passwordConfirmation'));

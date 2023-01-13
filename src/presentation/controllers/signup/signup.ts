@@ -22,20 +22,17 @@ class SignupController implements Controller<HttpRequest<BodySignupRequest>> {
 
   async exec({ body }: HttpRequest<BodySignupRequest>): Promise<HttpResponse> {
     try {
+      if (!body) {
+        return badRequest(new MissingParamError('body'));
+      }
       const { error } = this.validation.validate(body);
       if (error) {
         return badRequest(error);
       }
-      if (!body) {
-        return badRequest(new MissingParamError('body'));
-      }
       if (!this.emailValidator.isValid(body.email)) {
         return badRequest(new InvalidParamError('email'));
       }
-      const { password, passwordConfirmation, email, username } = body;
-      if (password !== passwordConfirmation) {
-        return badRequest(new InvalidParamError('passwordConfirmation'));
-      }
+      const { password, email, username } = body;
       const accountCreated = await this.addAccount.exec({
         email,
         password,
