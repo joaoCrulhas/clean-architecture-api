@@ -181,4 +181,12 @@ describe('LoginController', () => {
     expect(response.data.login).toEqual('validEmail@gmail.com');
     expect(response.statusCode).toEqual(200);
   });
+
+  it('should return a missing param error if body is not provided', async () => {
+    const { sut } = makeSut();
+    const response = await sut.exec({
+      body: undefined
+    });
+    expect(response).toEqual(badRequest(new MissingParamError('body')));
+  });
 });

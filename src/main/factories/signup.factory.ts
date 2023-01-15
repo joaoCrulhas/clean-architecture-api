@@ -5,10 +5,8 @@ import { LoggerDecorator } from '../decorators/logger-decorator';
 import { Controller } from '../../presentation/controllers/controller.protocol';
 import { SignupController } from '../../presentation/controllers/signup/signup';
 import { HttpRequest } from '../../presentation/protocols';
-import { EmailValidatorAdapter } from '../../utils/email-validator-adapter';
 import { LogErrorRepositoryMongoDb } from '../../infra/db/mongodb/repositories/logs/error';
 import { makeSignupComposite } from './signup-validation.factory';
-import { EmailValidation } from '../../presentation/helpers/email-validation';
 
 const makeSignupController = (): Controller<HttpRequest<any>> => {
   const validation = makeSignupComposite();

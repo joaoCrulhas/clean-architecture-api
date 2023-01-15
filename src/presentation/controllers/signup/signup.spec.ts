@@ -2,8 +2,10 @@ import { AccountModel } from '../../../domain/models/account.model';
 import { AddAccount } from '../../../domain/use-cases';
 import { AddAccountDTO } from '../../../domain/use-cases/add-account.usecase';
 import { InvalidParamError } from '../../errors/invalid-param.error';
+import { MissingParamError } from '../../errors/missing-param.error';
 import { ServerError } from '../../errors/server-error.error';
 import { HTTP_RESPONSE_CODE } from '../../helpers/http-code.helper';
+import { badRequest } from '../../helpers/http-response-factory.helper';
 import { EmailValidator, Validation } from '../../protocols';
 import { ValidationResponse } from '../../protocols/validation.protocol';
 import { SignupController } from './signup';
@@ -22,6 +24,7 @@ interface SystemUnderTest {
 const makeValidation = () => {
   class ValidationStub implements Validation {
     validate(args: number): ValidationResponse {
+      console.log(args);
       return {
         error: null
       };
@@ -43,6 +46,8 @@ const makeSut = (): SystemUnderTest => {
   }
   class EmailValidatorStub implements EmailValidator {
     isValid(email: string): boolean {
+      console.log(email);
+
       return true;
     }
   }
@@ -154,5 +159,12 @@ describe('SignUp Controller', () => {
       password: 'any_password',
       passwordConfirmation: 'any_password'
     });
+  });
+  it('Should return a badRequest if the body is not provided', async () => {
+    const { sut } = makeSut();
+    const response = await sut.exec({
+      body: undefined
+    });
+    expect(response).toEqual(badRequest(new MissingParamError('body')));
   });
 });

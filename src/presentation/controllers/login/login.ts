@@ -40,12 +40,12 @@ class LoginController implements Controller<HttpRequest<LoginRequest>> {
   }
   async exec(request: HttpRequest<LoginRequest>): Promise<HttpResponse> {
     try {
+      if (!request.body) {
+        return badRequest(new MissingParamError('body'));
+      }
       const { isValid, missingParam } = this.validateRequiredFields(request);
       if (!isValid) {
         return badRequest(new MissingParamError(missingParam));
-      }
-      if (!request.body) {
-        return badRequest(new MissingParamError('body'));
       }
       const { login, password } = request.body;
       if (emailCandidate(login)) {
