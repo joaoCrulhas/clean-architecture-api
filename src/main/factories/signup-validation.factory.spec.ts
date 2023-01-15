@@ -1,7 +1,10 @@
 import { CompareFieldsValidation } from '../../presentation/helpers/compare-fields-validation';
 import { RequiredFieldsValidation } from '../../presentation/helpers/required-fields-validation';
 import { ValidationComposite } from '../../presentation/helpers/validation-composite';
-import { makeSignupComposite } from './signup-validation.factory';
+import {
+  makeEmailValidation,
+  makeSignupComposite
+} from './signup-validation.factory';
 jest.mock('../../presentation/helpers/validation-composite');
 describe('SignupValidator', () => {
   it('should call ValidationComposite with all instances', async () => {
@@ -11,7 +14,8 @@ describe('SignupValidator', () => {
       new RequiredFieldsValidation('username'),
       new RequiredFieldsValidation('passwordConfirmation'),
       new RequiredFieldsValidation('password'),
-      new CompareFieldsValidation('passwordConfirmation')
+      new CompareFieldsValidation('passwordConfirmation'),
+      makeEmailValidation()
     ]);
   });
 });

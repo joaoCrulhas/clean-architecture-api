@@ -49,11 +49,7 @@ const makeSut = (): SystemUnderTest => {
   const emailValidatorStub = new EmailValidatorStub();
   const addAccountStub = new AddAccountStub();
   const validation = makeValidation();
-  const sut = new SignupController(
-    emailValidatorStub,
-    addAccountStub,
-    validation
-  );
+  const sut = new SignupController(addAccountStub, validation);
   return {
     validation,
     sut,
@@ -62,72 +58,6 @@ const makeSut = (): SystemUnderTest => {
   };
 };
 describe('SignUp Controller', () => {
-  it('Should execute at least one time the emailValidator@isValid if all fields is provided', function () {
-    const { sut, emailValidator } = makeSut();
-    const request = {
-      body: {
-        email: 'anyEmail@gmail.com',
-        username: 'any_username',
-        password: 'any_password',
-        passwordConfirmation: 'any_password'
-      }
-    };
-    const emailValidatorSpy = jest.spyOn(emailValidator, 'isValid');
-    sut.exec(request);
-    expect(emailValidatorSpy).toBeCalled();
-  });
-
-  it('Should return an error if the email provided is an invalid email', async function () {
-    const { sut, emailValidator } = makeSut();
-    const request = {
-      body: {
-        email: '##a321l',
-        username: 'any_username',
-        password: 'any_password',
-        passwordConfirmation: 'any_password'
-      }
-    };
-    jest.spyOn(emailValidator, 'isValid').mockReturnValue(false);
-    const { statusCode, data } = await sut.exec(request);
-    expect(statusCode).toEqual(HTTP_RESPONSE_CODE.badRequest);
-    expect(data).toEqual(new InvalidParamError('email'));
-  });
-
-  it('Should call EmailValidator@isValid with correct argument', function () {
-    const { sut, emailValidator } = makeSut();
-    const spy = jest.spyOn(emailValidator, 'isValid');
-
-    const request = {
-      body: {
-        email: '##a321l',
-        username: 'any_username',
-        password: 'any_password',
-        passwordConfirmation: 'any_password'
-      }
-    };
-    sut.exec(request);
-    expect(spy).toBeCalled();
-    expect(spy).toBeCalledWith('##a321l');
-  });
-
-  it('Should return an error if EmailValidator@isValid throws an error', async function () {
-    const { sut, emailValidator } = makeSut();
-    jest.spyOn(emailValidator, 'isValid').mockImplementation(() => {
-      throw new Error('ServerErrror');
-    });
-    const request = {
-      body: {
-        email: '##a321l',
-        username: 'any_username',
-        password: 'any_password',
-        passwordConfirmation: 'any_password'
-      }
-    };
-    const { statusCode, data } = await sut.exec(request);
-    expect(statusCode).toEqual(HTTP_RESPONSE_CODE.serverError);
-    expect(data).toEqual(new ServerError('ServerErrror'));
-  });
-
   it('should return an error if passwordConfirmation is different than password', async () => {
     const { sut, validation } = makeSut();
     const request = {

@@ -1,12 +1,11 @@
 import { AddAccount } from '../../../domain/use-cases';
-import { InvalidParamError } from '../../errors/invalid-param.error';
 import { MissingParamError } from '../../errors/missing-param.error';
 import {
   badRequest,
   serverError,
   successCreatedResource
 } from '../../helpers/http-response-factory.helper';
-import { EmailValidator, HttpResponse, Validation } from '../../protocols';
+import { HttpResponse, Validation } from '../../protocols';
 import {
   HttpRequest,
   BodySignupRequest
@@ -15,7 +14,6 @@ import { Controller } from '../controller.protocol';
 
 class SignupController implements Controller<HttpRequest<BodySignupRequest>> {
   constructor(
-    private readonly emailValidator: EmailValidator,
     private readonly addAccount: AddAccount,
     private readonly validation: Validation
   ) {}
@@ -28,9 +26,6 @@ class SignupController implements Controller<HttpRequest<BodySignupRequest>> {
       const { error } = this.validation.validate(body);
       if (error) {
         return badRequest(error);
-      }
-      if (!this.emailValidator.isValid(body.email)) {
-        return badRequest(new InvalidParamError('email'));
       }
       const { password, email, username } = body;
       const accountCreated = await this.addAccount.exec({
