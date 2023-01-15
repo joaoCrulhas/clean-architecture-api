@@ -35,6 +35,7 @@ class SignupController implements Controller<HttpRequest<BodySignupRequest>> {
       });
       return successCreatedResource(accountCreated);
     } catch (error: Error | any) {
+      console.log(error);
       return serverError(error);
     }
   }

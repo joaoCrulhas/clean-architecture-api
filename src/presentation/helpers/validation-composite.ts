@@ -5,10 +5,10 @@ class ValidationComposite implements Validation {
   constructor(private readonly validations: Array<Validation>) {}
   validate(args: any): ValidationResponse {
     for (const validator of this.validations) {
-      const result = validator.validate(args);
-      if (result) {
+      const { error } = validator.validate(args);
+      if (error) {
         return {
-          error: result.error
+          error
         };
       }
     }

@@ -14,7 +14,7 @@ describe('SignupValidator', () => {
       new RequiredFieldsValidation('username'),
       new RequiredFieldsValidation('passwordConfirmation'),
       new RequiredFieldsValidation('password'),
-      new CompareFieldsValidation('passwordConfirmation'),
+      new CompareFieldsValidation('password', 'passwordConfirmation'),
       makeEmailValidation()
     ]);
   });

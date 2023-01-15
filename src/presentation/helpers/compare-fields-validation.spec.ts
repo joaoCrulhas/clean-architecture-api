@@ -7,7 +7,7 @@ interface SystemUnderTest {
 }
 
 const makeSut = (): SystemUnderTest => {
-  const sut = new CompareFieldsValidation('password');
+  const sut = new CompareFieldsValidation('password', 'passwordConfirmation');
   return {
     sut
   };
@@ -15,14 +15,20 @@ const makeSut = (): SystemUnderTest => {
 describe('CompareFields validation', () => {
   it('Should return null if the fields to compare are equal', () => {
     const { sut } = makeSut();
-    const validFields = ['passwordValue', 'passwordValue'];
-    const response = sut.validate(validFields);
+    const response = sut.validate({
+      password: 'test1',
+      passwordConfirmation: 'test1'
+    });
     expect(response.error).toBeNull();
   });
   it('should return an error if the arguments are different', () => {
     const { sut } = makeSut();
-    const validFields = ['wrong!', 'passwordValue'];
-    const response = sut.validate(validFields);
-    expect(response.error).toEqual(new InvalidParamError('password'));
+    const response = sut.validate({
+      password: 'test1',
+      passwordConfirmation: 'tes32t1'
+    });
+    expect(response.error).toEqual(
+      new InvalidParamError('passwordConfirmation')
+    );
   });
 });
