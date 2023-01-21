@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { makeSignupController } from '../factories/signup.factory';
+import { makeSignupController } from '../factories/signup/signup.factory';
 import { adapterController } from '../adapters/express-route-adapter';
 const signupRoutes = (router: Router) => {
   console.log('signupRoutes');

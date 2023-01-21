@@ -1,11 +1,11 @@
-import { CompareFieldsValidation } from '../../presentation/helpers/compare-fields-validation';
-import { RequiredFieldsValidation } from '../../presentation/helpers/required-fields-validation';
-import { ValidationComposite } from '../../presentation/helpers/validation-composite';
+import { CompareFieldsValidation } from '../../../presentation/helpers/compare-fields-validation';
+import { RequiredFieldsValidation } from '../../../presentation/helpers/required-fields-validation';
+import { ValidationComposite } from '../../../presentation/helpers/validation-composite';
 import {
   makeEmailValidation,
   makeSignupComposite
 } from './signup-validation.factory';
-jest.mock('../../presentation/helpers/validation-composite');
+jest.mock('../../../presentation/helpers/validation-composite');
 describe('SignupValidator', () => {
   it('should call ValidationComposite with all instances', async () => {
     makeSignupComposite();
