@@ -2,6 +2,10 @@ import { Validation } from '../protocols';
 import { ValidationResponse } from '../protocols/validation.protocol';
 import { ValidationComposite } from './validation-composite';
 
+interface SystemUnderTest {
+  sut: ValidationComposite;
+  validators: Array<Validation>;
+}
 const makeValidationsStubs = (): Array<Validation> => {
   class ValidationStub implements Validation {
     validate(args: any): ValidationResponse {
@@ -15,10 +19,7 @@ const makeValidationsStubs = (): Array<Validation> => {
   return [validationsStub];
 };
 
-const makeSut = (): {
-  sut: ValidationComposite;
-  validators: Array<Validation>;
-} => {
+const makeSut = (): SystemUnderTest => {
   const validators = makeValidationsStubs();
   const sut = new ValidationComposite(validators);
   return { sut, validators };
@@ -35,7 +36,6 @@ describe('Validation Composite', () => {
     const { error } = sut.validate(['fakeArgument']);
     expect(error).toBeNull();
   });
-
   it('should return error if validation throw', () => {
     const { sut, validators } = makeSut();
     jest.spyOn(validators[0], 'validate').mockReturnValueOnce({
