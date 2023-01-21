@@ -4,13 +4,15 @@ import { EmailValidatorAdapter } from '../../../utils/email-validator-adapter';
 import { InvalidParamError } from '../../errors/invalid-param.error';
 import { MissingParamError } from '../../errors/missing-param.error';
 import { UnauthorizedError } from '../../errors/unauthorized-error';
+import { HTTP_RESPONSE_CODE } from '../../helpers/http-code.helper';
 import {
   badRequest,
   serverError,
   unauthorized
 } from '../../helpers/http-response-factory.helper';
-import { EmailValidator, HttpRequest } from '../../protocols';
+import { EmailValidator, HttpRequest, Validation } from '../../protocols';
 import { LoginRequest } from '../../protocols/http-request.protocol';
+import { ValidationResponse } from '../../protocols/validation.protocol';
 import { Controller } from '../controller.protocol';
 import { LoginController } from './login';
 jest.mock('../../../utils/email-validator-adapter', () => {
@@ -27,6 +29,7 @@ interface SystemUnderTest {
   sut: Controller<HttpRequest<LoginRequest>>;
   emailValidator: EmailValidator;
   authenticator: AuthenticationAccount;
+  validation: Validation;
 }
 const makeAuthenticatorStub = () => {
   class AuthenticationAccountStub implements AuthenticationAccount {
@@ -41,14 +44,28 @@ const makeAuthenticatorStub = () => {
   }
   return new AuthenticationAccountStub();
 };
+const makeValidators = (): Validation => {
+  class ValidatorsStub implements Validation {
+    validate(args: any): ValidationResponse {
+      console.log(args);
+      return {
+        error: null
+      };
+    }
+  }
+  return new ValidatorsStub();
+};
+
 const makeSut = (): SystemUnderTest => {
   const emailValidator = new EmailValidatorAdapter();
   const authenticator = makeAuthenticatorStub();
-  const sut = new LoginController(emailValidator, authenticator);
+  const validation = makeValidators();
+  const sut = new LoginController(emailValidator, authenticator, validation);
   return {
     authenticator,
     sut,
-    emailValidator
+    emailValidator,
+    validation
   };
 };
 
@@ -71,29 +88,16 @@ const makeHttpLoginRequestUsername = () => {
 };
 
 describe('LoginController', () => {
-  it('Should return an error if password is not provided', async () => {
-    const { sut } = makeSut();
-    const loginRequest: HttpRequest<LoginRequest> = {
-      body: {
-        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-        //@ts-ignore
-        email: 'test@gmail.com'
-      }
-    };
-    const response = await sut.exec(loginRequest);
-    expect(response).toEqual(badRequest(new MissingParamError('password')));
-  });
-  it('Should return an error if email is not provided', async () => {
-    const { sut } = makeSut();
-    const loginRequest: HttpRequest<LoginRequest> = {
-      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      //@ts-ignore
-      body: {
-        password: 'test@gmail.com'
-      }
-    };
-    const response = await sut.exec(loginRequest);
-    expect(response).toEqual(badRequest(new MissingParamError('login')));
+  it('should return an error if validations find an error', async () => {
+    const { sut, validation } = makeSut();
+    const aSpy = jest.spyOn(validation, 'validate').mockReturnValueOnce({
+      error: new Error('test')
+    });
+    const { statusCode, data } = await sut.exec(
+      makeHttpLoginRequestWithEmail()
+    );
+    expect(aSpy).toHaveBeenCalled();
+    expect(data).toEqual(new Error('test'));
   });
   it('Should execute emailValidator if the login provided is a valid email', async () => {
     const { sut, emailValidator } = makeSut();
