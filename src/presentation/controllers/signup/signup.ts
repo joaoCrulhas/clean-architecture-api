@@ -10,7 +10,7 @@ import {
   HttpRequest,
   BodySignupRequest
 } from '../../protocols/http-request.protocol';
-import { Controller } from '../controller.protocol';
+import { Controller } from '../../protocols/controller.protocol';
 
 class SignupController implements Controller<HttpRequest<BodySignupRequest>> {
   constructor(

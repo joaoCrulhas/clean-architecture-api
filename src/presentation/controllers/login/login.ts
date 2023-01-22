@@ -16,10 +16,10 @@ import {
   Validation
 } from '../../protocols';
 import { LoginRequest } from '../../protocols/http-request.protocol';
-import { Controller } from '../controller.protocol';
+import { Controller } from '../../protocols/controller.protocol';
 
 class LoginController implements Controller<HttpRequest<LoginRequest>> {
-   constructor(
+  constructor(
     private readonly emailValidator: EmailValidator,
     private readonly authenticator: AuthenticationAccount,
     private readonly validation: Validation

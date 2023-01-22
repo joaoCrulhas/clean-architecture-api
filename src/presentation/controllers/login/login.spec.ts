@@ -13,7 +13,7 @@ import {
 import { EmailValidator, HttpRequest, Validation } from '../../protocols';
 import { LoginRequest } from '../../protocols/http-request.protocol';
 import { ValidationResponse } from '../../protocols/validation.protocol';
-import { Controller } from '../controller.protocol';
+import { Controller } from '../../protocols/controller.protocol';
 import { LoginController } from './login';
 jest.mock('../../../utils/email-validator-adapter', () => {
   return {

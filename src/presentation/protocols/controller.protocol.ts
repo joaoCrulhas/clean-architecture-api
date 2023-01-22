@@ -1,4 +1,4 @@
-import { HttpResponse } from '../protocols';
+import { HttpResponse } from '.';
 
 interface Controller<T> {
   exec(request: T): Promise<HttpResponse>;
