@@ -43,4 +43,13 @@ describe('DbAuthentication UseCase', () => {
     expect(aSpy).toBeCalled();
     expect(aSpy).toHaveBeenCalledWith(makeHttLoginRequest().login);
   });
+
+  it('should throw an exception if loadAccountRepository@load throws', async () => {
+    const { sut, loadAccountRepository } = makeSut();
+    jest.spyOn(loadAccountRepository, 'load').mockImplementationOnce(() => {
+      throw new Error();
+    });
+    const promise = sut.auth(makeHttLoginRequest());
+    expect(promise).rejects.toThrow();
+  });
 });
