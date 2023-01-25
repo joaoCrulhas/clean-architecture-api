@@ -1,4 +1,4 @@
-import { LoggerErrorRepository } from '../../data/protocols/log-error-repository';
+import { LoggerErrorRepository } from '../../data/protocols/db/log-error-repository';
 import { Controller } from '../../presentation/protocols/controller.protocol';
 import { ServerError } from '../../presentation/errors/server-error.error';
 import { HTTP_RESPONSE_CODE } from '../../presentation/helpers/http-code.helper';

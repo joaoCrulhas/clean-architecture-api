@@ -3,8 +3,8 @@ import {
   AddAccount,
   AddAccountDTO
 } from '../../../domain/use-cases/add-account.usecase';
-import { AddAccountRepository } from '../../protocols/add-account-repository';
-import { Encrypter } from '../../protocols/encrypter';
+import { AddAccountRepository } from '../../protocols/db/add-account-repository';
+import { Encrypter } from '../../protocols/cryptography/encrypter';
 import { DbAddAccount } from './db-add-account';
 
 interface SystemUnderTest {

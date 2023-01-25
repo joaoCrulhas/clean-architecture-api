@@ -1,8 +1,6 @@
 import { AccountModel } from '../../../domain/models/account.model';
-import { AuthenticationModel } from '../../../domain/models/authentication.model';
-import { AuthenticationAccount } from '../../../domain/use-cases/authentication-account.usecase';
 import { LoginRequest } from '../../../presentation/protocols/http-request.protocol';
-import { LoadAccount } from '../../protocols/load-account-repository';
+import { LoadAccount } from '../../protocols/db/load-account-repository';
 import { DbAuthentication } from './db-authentication';
 
 class LoadAccountRepositoryStub implements LoadAccount {
