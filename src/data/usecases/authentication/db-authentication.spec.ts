@@ -91,4 +91,13 @@ describe('DbAuthentication UseCase', () => {
     const response = await sut.auth(makeHttLoginRequest());
     expect(response).toBeNull();
   });
+
+  it('should throw an exception if loadAccountRepository@load throws', async () => {
+    const { sut, hashCompare } = makeSut();
+    jest.spyOn(hashCompare, 'compare').mockImplementationOnce(() => {
+      throw new Error();
+    });
+    const promise = sut.auth(makeHttLoginRequest());
+    expect(promise).rejects.toThrow();
+  });
 });
