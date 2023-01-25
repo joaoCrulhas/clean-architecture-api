@@ -137,4 +137,10 @@ describe('DbAuthentication UseCase', () => {
     const promise = sut.auth(makeHttLoginRequest());
     expect(promise).rejects.toThrow();
   });
+
+  it('should return success token if all data are provided', async () => {
+    const { sut } = makeSut();
+    const response = await sut.auth(makeHttLoginRequest());
+    expect(response?.token).toEqual('fake-token');
+  });
 });
