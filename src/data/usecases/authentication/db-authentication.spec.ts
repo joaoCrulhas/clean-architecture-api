@@ -1,11 +1,10 @@
-jest.mock('../../../infra/cryptography/bcrypt-adapter'); // <= auto-mock the module
 import { AccountModel } from '../../../domain/models/account.model';
 import { LoginRequest } from '../../../presentation/protocols/http-request.protocol';
-import { Encrypter } from '../../protocols/cryptography/encrypter';
 import { LoadAccount } from '../../protocols/db/load-account-repository';
 import { DbAuthentication } from './db-authentication';
-import { BcryptAdapter } from '../../../infra/cryptography/bcrypt-adapter';
 import { HashCompare } from '../../protocols/cryptography/hash-compare';
+import { TokenGenerator } from '../../protocols/cryptography/token-generator';
+import { AuthenticationModel } from '../../../domain/models/authentication.model';
 class LoadAccountRepositoryStub implements LoadAccount {
   load(login: string): Promise<AccountModel | null> {
     const account: AccountModel = {
@@ -17,6 +16,21 @@ class LoadAccountRepositoryStub implements LoadAccount {
     return Promise.resolve(account);
   }
 }
+
+const makeTokenGeneratorStub = (): TokenGenerator => {
+  class TokenGeneratorStub implements TokenGenerator {
+    generate(id: string): Promise<AuthenticationModel> {
+      console.log(id);
+      const mockedResponse: AuthenticationModel = {
+        login: 'fake-login',
+        token: 'fake-token',
+        expireAt: new Date('2020-10-10')
+      };
+      return Promise.resolve(mockedResponse);
+    }
+  }
+  return new TokenGeneratorStub();
+};
 
 const makeHashCompare = (): HashCompare => {
   class HashCompareStub implements HashCompare {
@@ -32,11 +46,18 @@ const makeSut = (): {
   sut: DbAuthentication;
   loadAccountRepository: LoadAccount;
   hashCompare: HashCompare;
+  tokenGenerator: TokenGenerator;
 } => {
   const loadAccountRepository = new LoadAccountRepositoryStub();
   const hashCompare = makeHashCompare();
-  const sut = new DbAuthentication(loadAccountRepository, hashCompare);
+  const tokenGeneratorStub = makeTokenGeneratorStub();
+  const sut = new DbAuthentication(
+    loadAccountRepository,
+    hashCompare,
+    tokenGeneratorStub
+  );
   return {
+    tokenGenerator: tokenGeneratorStub,
     sut,
     loadAccountRepository,
     hashCompare
@@ -95,6 +116,22 @@ describe('DbAuthentication UseCase', () => {
   it('should throw an exception if loadAccountRepository@load throws', async () => {
     const { sut, hashCompare } = makeSut();
     jest.spyOn(hashCompare, 'compare').mockImplementationOnce(() => {
+      throw new Error();
+    });
+    const promise = sut.auth(makeHttLoginRequest());
+    expect(promise).rejects.toThrow();
+  });
+  it('should call token generator with correct id', async () => {
+    const { sut, tokenGenerator } = makeSut();
+    const aSpy = jest.spyOn(tokenGenerator, 'generate');
+    await sut.auth(makeHttLoginRequest());
+    expect(aSpy).toBeCalled();
+    expect(aSpy).toBeCalledWith('fake-id');
+  });
+
+  it('should throw an exception if loadAccountRepository@load throws', async () => {
+    const { sut, tokenGenerator } = makeSut();
+    jest.spyOn(tokenGenerator, 'generate').mockImplementationOnce(() => {
       throw new Error();
     });
     const promise = sut.auth(makeHttLoginRequest());
