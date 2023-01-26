@@ -169,4 +169,15 @@ describe('DbAuthentication UseCase', () => {
       expireAt: new Date('2020-10-10')
     });
   });
+
+  it('should throw an exception if loadAccountRepository@load throws', async () => {
+    const { sut, updateAccessTokenRepository } = makeSut();
+    jest
+      .spyOn(updateAccessTokenRepository, 'update')
+      .mockImplementationOnce(() => {
+        throw new Error();
+      });
+    const promise = sut.auth(makeHttLoginRequest());
+    expect(promise).rejects.toThrow();
+  });
 });
