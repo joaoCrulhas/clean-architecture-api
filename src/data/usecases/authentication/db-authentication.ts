@@ -4,12 +4,14 @@ import { LoginRequest } from '../../../presentation/protocols/http-request.proto
 import { HashCompare } from '../../protocols/cryptography/hash-compare';
 import { TokenGenerator } from '../../protocols/cryptography/token-generator';
 import { LoadAccount } from '../../protocols/db/load-account-repository';
+import { UpdateAccessTokenRepository } from '../../protocols/db/update-access-token-repository';
 
 class DbAuthentication implements AuthenticationAccount {
   constructor(
     private readonly loadAccount: LoadAccount,
     private readonly hashCompare: HashCompare,
-    private readonly tokenGenerator: TokenGenerator
+    private readonly tokenGenerator: TokenGenerator,
+    private readonly updateAccessTokenRepository: UpdateAccessTokenRepository
   ) {}
   async auth({
     login,
@@ -25,6 +27,11 @@ class DbAuthentication implements AuthenticationAccount {
       return null;
     }
     const { token, expireAt } = await this.tokenGenerator.generate(id);
+    await this.updateAccessTokenRepository.update({
+      token,
+      id,
+      expireAt
+    });
     const mockedAuthenticationModel: AuthenticationModel = {
       login,
       token,
