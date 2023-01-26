@@ -5,10 +5,7 @@ import { DbAuthentication } from './db-authentication';
 import { HashCompare } from '../../protocols/cryptography/hash-compare';
 import { TokenGenerator } from '../../protocols/cryptography/token-generator';
 import { AuthenticationModel } from '../../../domain/models/authentication.model';
-import {
-  UpdateAccessTokenDTO,
-  UpdateAccessTokenRepository
-} from '../../protocols/db/update-access-token-repository';
+import { UpdateAccessTokenRepository } from '../../protocols/db/update-access-token-repository';
 class LoadAccountRepositoryStub implements LoadAccount {
   load(login: string): Promise<AccountModel | null> {
     const account: AccountModel = {
@@ -47,8 +44,9 @@ const makeHashCompare = (): HashCompare => {
 };
 const makeUpdateAccessTokenRepositoryStub = (): UpdateAccessTokenRepository => {
   class UpdateAccessTokenRepositoryStub implements UpdateAccessTokenRepository {
-    update(args: any): Promise<any> {
-      return Promise.resolve(args);
+    update(args: any): Promise<void> {
+      console.log(args);
+      return Promise.resolve();
     }
   }
   return new UpdateAccessTokenRepositoryStub();

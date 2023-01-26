@@ -32,12 +32,11 @@ class DbAuthentication implements AuthenticationAccount {
       id,
       expireAt
     });
-    const mockedAuthenticationModel: AuthenticationModel = {
+    return {
       login,
       token,
       expireAt
     };
-    return Promise.resolve(mockedAuthenticationModel);
   }
 }
 

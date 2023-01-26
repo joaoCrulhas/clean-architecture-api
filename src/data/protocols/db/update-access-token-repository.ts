@@ -4,6 +4,6 @@ interface UpdateAccessTokenDTO {
   id: string;
 }
 interface UpdateAccessTokenRepository {
-  update(args: UpdateAccessTokenDTO): Promise<any>;
+  update(args: UpdateAccessTokenDTO): Promise<void>;
 }
 export { UpdateAccessTokenRepository, UpdateAccessTokenDTO };
