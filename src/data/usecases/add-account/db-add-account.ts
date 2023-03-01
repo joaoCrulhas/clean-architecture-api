@@ -2,11 +2,11 @@ import { AccountModel } from '../../../domain/models/account.model';
 import { AddAccount } from '../../../domain/use-cases';
 import { AddAccountDTO } from '../../../domain/use-cases/add-account.usecase';
 import { AddAccountRepository } from '../../protocols/db/add-account-repository';
-import { Encrypter } from '../../protocols/cryptography/encrypter';
+import { Hasher } from '../../protocols/cryptography/hasher';
 
 class DbAddAccount implements AddAccount {
   constructor(
-    private readonly encrypter: Encrypter,
+    private readonly encrypter: Hasher,
     private readonly addAccountRepository: AddAccountRepository
   ) {}
   async exec({
@@ -14,7 +14,7 @@ class DbAddAccount implements AddAccount {
     password,
     username
   }: AddAccountDTO): Promise<AccountModel> {
-    const encryptedPassword = await this.encrypter.encrypt(password);
+    const encryptedPassword = await this.encrypter.hash(password);
     return await this.addAccountRepository.add({
       email,
       password: encryptedPassword,

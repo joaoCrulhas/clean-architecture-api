@@ -1,8 +1,8 @@
-import { Encrypter } from '../../data/protocols/cryptography/encrypter';
+import { Hasher } from '../../data/protocols/cryptography/hasher';
 import bcrypt from 'bcrypt';
 import { BcryptAdapter } from './bcrypt-adapter';
 
-const makeSut = (): { sut: Encrypter } => {
+const makeSut = (): { sut: Hasher } => {
   const sut = new BcryptAdapter(12);
   return {
     sut
@@ -13,7 +13,7 @@ describe('Bcrypte-adpater', () => {
   it('should call bcrypte adpter with correct arguments', async () => {
     const aSpy = jest.spyOn(bcrypt, 'hash');
     const { sut } = makeSut();
-    await sut.encrypt('current_password');
+    await sut.hash('current_password');
     expect(aSpy).toBeCalledWith('current_password', 12);
   });
 
@@ -22,7 +22,7 @@ describe('Bcrypte-adpater', () => {
       return Promise.resolve('hashed_string');
     });
     const { sut } = makeSut();
-    const hashedKey = await sut.encrypt('current_password');
+    const hashedKey = await sut.hash('current_password');
     expect(hashedKey).toEqual('hashed_string');
   });
 
@@ -31,7 +31,7 @@ describe('Bcrypte-adpater', () => {
       return Promise.reject(new Error());
     });
     const { sut } = makeSut();
-    const promise = sut.encrypt('current_password');
+    const promise = sut.hash('current_password');
     expect(promise).rejects.toThrow();
   });
 });

@@ -1,4 +1,6 @@
-interface Encrypter {
-  encrypt(value: string): Promise<string>;
+import { AuthenticationModel } from '../../../domain/models/authentication.model';
+
+interface TokenGenerator {
+  encrypt(value: string): Promise<AuthenticationModel>;
 }
-export { Encrypter };
+export { TokenGenerator };

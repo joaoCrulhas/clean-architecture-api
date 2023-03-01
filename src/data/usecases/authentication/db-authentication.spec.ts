@@ -3,7 +3,7 @@ import { LoginRequest } from '../../../presentation/protocols/http-request.proto
 import { LoadAccount } from '../../protocols/db/load-account-repository';
 import { DbAuthentication } from './db-authentication';
 import { HashCompare } from '../../protocols/cryptography/hash-compare';
-import { TokenGenerator } from '../../protocols/cryptography/token-generator';
+import { TokenGenerator } from '../../protocols/cryptography/encrypter';
 import { AuthenticationModel } from '../../../domain/models/authentication.model';
 import { UpdateAccessTokenRepository } from '../../protocols/db/update-access-token-repository';
 class LoadAccountRepositoryStub implements LoadAccount {
@@ -20,8 +20,8 @@ class LoadAccountRepositoryStub implements LoadAccount {
 
 const makeTokenGeneratorStub = (): TokenGenerator => {
   class TokenGeneratorStub implements TokenGenerator {
-    generate(id: string): Promise<AuthenticationModel> {
-      console.log(id);
+    encrypt(value: string): Promise<AuthenticationModel> {
+      console.log(value);
       const mockedResponse: AuthenticationModel = {
         login: 'fake-login',
         token: 'fake-token',
@@ -136,7 +136,7 @@ describe('DbAuthentication UseCase', () => {
   });
   it('should call token generator with correct id', async () => {
     const { sut, tokenGenerator } = makeSut();
-    const aSpy = jest.spyOn(tokenGenerator, 'generate');
+    const aSpy = jest.spyOn(tokenGenerator, 'encrypt');
     await sut.auth(makeHttLoginRequest());
     expect(aSpy).toBeCalled();
     expect(aSpy).toBeCalledWith('fake-id');
@@ -144,7 +144,7 @@ describe('DbAuthentication UseCase', () => {
 
   it('should throw an exception if loadAccountRepository@load throws', async () => {
     const { sut, tokenGenerator } = makeSut();
-    jest.spyOn(tokenGenerator, 'generate').mockImplementationOnce(() => {
+    jest.spyOn(tokenGenerator, 'encrypt').mockImplementationOnce(() => {
       throw new Error();
     });
     const promise = sut.auth(makeHttLoginRequest());

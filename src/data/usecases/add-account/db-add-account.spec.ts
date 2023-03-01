@@ -4,12 +4,12 @@ import {
   AddAccountDTO
 } from '../../../domain/use-cases/add-account.usecase';
 import { AddAccountRepository } from '../../protocols/db/add-account-repository';
-import { Encrypter } from '../../protocols/cryptography/encrypter';
+import { Hasher } from '../../protocols/cryptography/hasher';
 import { DbAddAccount } from './db-add-account';
 
 interface SystemUnderTest {
   sut: AddAccount;
-  encrypter: Encrypter;
+  encrypter: Hasher;
   addAccountRepository: AddAccountRepository;
 }
 
@@ -28,8 +28,8 @@ const makeAddAccountRepository = () => {
   return addRepository;
 };
 const makeSut = (): SystemUnderTest => {
-  class EncrypterStub implements Encrypter {
-    async encrypt(value: string): Promise<string> {
+  class EncrypterStub implements Hasher {
+    async hash(value: string): Promise<string> {
       return Promise.resolve('encrypted_string');
     }
   }
@@ -51,7 +51,7 @@ describe('DbAccount', () => {
       password: 'valid_password'
     };
     const { sut, encrypter } = makeSut();
-    const aSpy = jest.spyOn(encrypter, 'encrypt');
+    const aSpy = jest.spyOn(encrypter, 'hash');
     await sut.exec(request);
     expect(aSpy).toBeCalled();
     expect(aSpy).toBeCalledWith('valid_password');
@@ -65,7 +65,7 @@ describe('DbAccount', () => {
     };
     const { sut, encrypter, addAccountRepository } = makeSut();
     const aSpy = jest.spyOn(addAccountRepository, 'add');
-    jest.spyOn(encrypter, 'encrypt').mockResolvedValueOnce('encryptedPassword');
+    jest.spyOn(encrypter, 'hash').mockResolvedValueOnce('encryptedPassword');
     await sut.exec(request);
     expect(aSpy).toBeCalledWith({
       email: 'valid_emaal@gmail.com',
@@ -80,7 +80,7 @@ describe('DbAccount', () => {
       password: 'valid_password'
     };
     const { sut, encrypter } = makeSut();
-    jest.spyOn(encrypter, 'encrypt').mockImplementationOnce(() => {
+    jest.spyOn(encrypter, 'hash').mockImplementationOnce(() => {
       return Promise.reject(new Error('Encrypt_Error'));
     });
 
@@ -121,7 +121,7 @@ describe('DbAccount', () => {
       password: 'valid_password'
     };
     const { sut, addAccountRepository, encrypter } = makeSut();
-    jest.spyOn(encrypter, 'encrypt').mockResolvedValueOnce('encryptedPassword');
+    jest.spyOn(encrypter, 'hash').mockResolvedValueOnce('encryptedPassword');
     jest.spyOn(addAccountRepository, 'add').mockResolvedValueOnce(response);
     const accountCretead = await sut.exec(request);
     expect(accountCretead).toStrictEqual(response);
