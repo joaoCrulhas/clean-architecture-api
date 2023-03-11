@@ -54,4 +54,13 @@ describe('Bcrypte-adpater', () => {
     const promise = sut.hash('current_password');
     expect(promise).rejects.toThrow();
   });
+
+  it('Should throws if bcrypt thros an excpetion in the compare method', async () => {
+    jest.spyOn(bcrypt, 'compare').mockImplementationOnce(() => {
+      return Promise.reject(new Error());
+    });
+    const { sut } = makeSut();
+    const promise = sut.compare('value', 'hashedvalue');
+    expect(promise).rejects.toThrow();
+  });
 });
