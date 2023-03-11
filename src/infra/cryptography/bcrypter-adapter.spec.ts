@@ -2,7 +2,7 @@ import { Hasher } from '../../data/protocols/cryptography/hasher';
 import bcrypt from 'bcrypt';
 import { BcryptAdapter } from './bcrypt-adapter';
 
-const makeSut = (): { sut: Hasher } => {
+const makeSut = (): { sut: BcryptAdapter } => {
   const sut = new BcryptAdapter(12);
   return {
     sut
@@ -10,7 +10,27 @@ const makeSut = (): { sut: Hasher } => {
 };
 
 describe('Bcrypte-adpater', () => {
-  it('should call bcrypte adpter with correct arguments', async () => {
+  it('should call bcrypt@compare with correct arguments', async () => {
+    const aSpy = jest.spyOn(bcrypt, 'compare').mockImplementationOnce(() => {
+      return Promise.resolve(true);
+    });
+    const { sut } = makeSut();
+    const response = await sut.compare('any_value', 'any_hash');
+    expect(aSpy).toHaveBeenCalledWith('any_value', 'any_hash');
+    expect(response).toBeTruthy();
+  });
+
+  it('should call bcryptAdapater@compare return false if bcrypt returns false', async () => {
+    const aSpy = jest.spyOn(bcrypt, 'compare').mockImplementationOnce(() => {
+      return Promise.resolve(false);
+    });
+    const { sut } = makeSut();
+    const response = await sut.compare('any_value', 'any_hash');
+    expect(aSpy).toHaveBeenCalledWith('any_value', 'any_hash');
+    expect(response).toBeFalsy();
+  });
+
+  it('should call bcrypte@hash adpter with correct arguments', async () => {
     const aSpy = jest.spyOn(bcrypt, 'hash');
     const { sut } = makeSut();
     await sut.hash('current_password');
